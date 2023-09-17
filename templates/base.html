@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{{ title }}{% endblock %}</title>
+    <style>
+        html {
+          color:#e7e6e3;
+          background-color:#181a1b
+        }
+        .like-a {
+          color:#ff66ba;
+          text-decoration:underline
+        }
+        a {
+          color:#ff66ba
+        }
+        .subreddit-name {
+            text-align: center;
+        }
+        .subreddit-post {
+            border: 1px solid #ff66ba;
+            padding: 8px;
+        }
+        .pinned {
+            background-color:  #1a3810;
+        }
+        .post-title {
+            text-align: center;
+        }
+        .box {
+            border: 1px solid #ff66ba;
+            padding: 8px;
+        }
+    </style>
+
+  </head>
+  <body>
+    <div id="content" role="main">
+        {% block content %}<p>Placeholder content</p>{% endblock %}
+    </div>
+  </body>
+</html>

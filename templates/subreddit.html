@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}r/{{subreddit}} - Older reddit{% endblock %}
+
+{% block content %}
+<h1 class="subreddit-name">r/{{subreddit}}</h1>
+
+{% for post in data.children %}
+    <div class="subreddit-post">
+        <small>{{post.data.score}}</small>
+        <a href="/r/{{post.data.subreddit}}/comments/{{post.data.id}}">{{post.data.title}}</a>
+        <br>
+        {% if subreddit != post.data.subreddit %}
+            <small>Submitted [time] by <a href="/u/{{post.data.author}}">{{post.data.author}}</a> to <a href="/r/{{post.data.subreddit}}">r/{{post.data.subreddit}}</a> - {{post.data.num_comments}} comments</small>
+        {% else %}
+            <small>Submitted [time] by <a href="/u/{{post.data.author}}">{{post.data.author}}</a> - {{post.data.num_comments}} comments</small>
+        {% endif %}
+    </div>
+{% endfor %}
+{% endblock %}
