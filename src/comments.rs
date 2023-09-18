@@ -74,10 +74,10 @@ struct PostDataChildren {
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 struct PostDataChildrenInner {
-    selftext_html: Option<String>,
-    body_html: Option<String>,
+    selftext: Option<String>,
+    body: Option<String>,
     title: Option<String>,
-    edited: bool,
+    //edited: bool,
     //created_utc: u64,
     score: i32,
     stickied: bool,
@@ -101,11 +101,11 @@ impl TryFrom<Vec<PostResponse>> for PostResults {
 
         let post = RedditPost {
             id: stuff.id.clone(),
-            selftext_html: stuff.selftext_html.clone().ok_or(StatusCode::INTERNAL_SERVER_ERROR)?,
+            selftext: stuff.selftext.clone().ok_or(StatusCode::INTERNAL_SERVER_ERROR)?,
             title: stuff.title.clone().ok_or(StatusCode::INTERNAL_SERVER_ERROR)?,
             score: stuff.score,
             author: stuff.author.clone(),
-            edited: stuff.edited,
+            //edited: stuff.edited,
             locked: stuff.locked,
             stickied: stuff.stickied,
             spoiler: stuff.spoiler.ok_or(StatusCode::INTERNAL_SERVER_ERROR)?
@@ -117,10 +117,10 @@ impl TryFrom<Vec<PostResponse>> for PostResults {
         for c in children {
             let comment = RedditComments {
                 id: c.data.id.clone(),
-                body_html: c.data.body_html.clone().ok_or(StatusCode::INTERNAL_SERVER_ERROR)?,
+                body: c.data.body.clone().ok_or(StatusCode::INTERNAL_SERVER_ERROR)?,
                 score: c.data.score,
                 author: c.data.author.clone(),
-                edited: c.data.edited,
+                //edited: c.data.edited,
                 locked: c.data.locked,
                 stickied: c.data.stickied
             };
@@ -138,11 +138,11 @@ impl TryFrom<Vec<PostResponse>> for PostResults {
 #[derive(Debug, Clone, Deserialize, Serialize)]
 struct RedditPost {
     id: String,
-    selftext_html: String,
+    selftext: String,
     title: String,
     score: i32,
     author: String,
-    edited: bool,
+    //edited: bool,
     locked: bool,
     stickied: bool,
     spoiler: bool
@@ -151,10 +151,10 @@ struct RedditPost {
 #[derive(Debug, Clone, Deserialize, Serialize)]
 struct RedditComments {
     id: String,
-    body_html: String,
+    body: String,
     score: i32,
     author: String,
-    edited: bool,
+    //edited: bool,
     locked: bool,
     stickied: bool
 }

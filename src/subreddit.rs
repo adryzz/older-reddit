@@ -83,7 +83,7 @@ struct SubredditPostData {
     title: String,
     score: i32,
     thumbnail: Option<String>,
-    edited: bool,
+    //edited: bool,
     upvote_ratio: f32,
     archived: bool,
     pinned: bool,

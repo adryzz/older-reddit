@@ -1,6 +1,8 @@
 mod comments;
 mod subreddit;
 mod utils;
+mod api_types;
+mod api_result_types;
 
 use axum::{routing::get, Router, response::Redirect};
 

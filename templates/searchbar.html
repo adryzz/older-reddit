@@ -1,0 +1,21 @@
+<div class="nav-links">
+    <span><a href="/r/{{subreddit}}/hot">hot</a></span>
+    <span>|</span>
+    <span><a href="/r/{{subreddit}}/new" class="active">new</a></span>
+    <span>|</span>
+    <span><a href="/r/{{subreddit}}/rising">rising</a></span>
+    <span>|</span>
+    <span><a href="/r/{{subreddit}}/controversial">controversial</a></span>
+    <span>|</span>
+    <span><a href="/r/{{subreddit}}/top">top</a></span>
+    <span>|</span>
+    <span><a href="/r/{{subreddit}}/wiki">wiki</a></span>
+</div>
+<div class="padding-right">
+</div>
+<form action="/search" method="GET" class="search">
+    <label class="checkbox-label" for="include_over_18">NSFW</label>
+    <input type="checkbox" id="include_over_18" name="include_over_18" value="true">
+    <input type="text" id="search" name="q" placeholder="Search...">
+    <input type="submit" value="Search">
+</form>

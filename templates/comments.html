@@ -3,9 +3,8 @@
 {% block title %}{{data.post.title}} - r/{{subreddit}} - Older reddit{% endblock %}
 
 {% block content %}
-<h1 class="subreddit-name">r/{{subreddit}}</h1>
 <div class="subreddit-post">
     <h2 class="post-title">{{data.post.title}}</h2>
-    {{data.post.selftext_html|safe}}
+    {{data.post.selftext.clone()|markdown}}
 </div>
 {% endblock %}

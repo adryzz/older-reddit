@@ -33,10 +33,39 @@
             border: 1px solid #ff66ba;
             padding: 8px;
         }
+        .site-header {
+          padding-bottom:5px;
+          text-align: center;
+        }
+        .inline {
+            display: inline;
+        }
+        .margin-bot-4px {
+            margin-bottom: 4px;
+            text-align: center;
+        }
+        .nav-links {
+          margin-left: 16px;
+          display: inline;
+        }
+        .search {
+          margin-right: 16px;
+          display: inline;
+        }
+        .padding-right {
+          display: inline;
+          margin-right: 45%;
+        }
     </style>
 
   </head>
   <body>
+    <div>
+      <h1 class="subreddit-name">r/{{subreddit}}</h1>
+      <div id="search" role="search" class="margin-bot-4px">
+      {% include "searchbar.html" %}
+      </div>
+    </div>
     <div id="content" role="main">
         {% block content %}<p>Placeholder content</p>{% endblock %}
     </div>
