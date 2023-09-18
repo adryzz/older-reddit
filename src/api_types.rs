@@ -1,14 +1,16 @@
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Default)]
+use serde::Deserialize;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Default, Deserialize)]
 pub enum SortingMode {
     #[default]
     Hot,
     New,
     Rising,
     Controversial,
-    Top(TopSortingTime)
+    Top(TopSortingTime),
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Default, Deserialize)]
 pub enum TopSortingTime {
     PastHour,
     Past24Hours,
@@ -16,6 +18,17 @@ pub enum TopSortingTime {
     PastWeek,
     PastMonth,
     PastYear,
-    AllTime
+    AllTime,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Default, Deserialize)]
+pub enum CommentSortingMode {
+    #[default]
+    Suggested,
+    Best,
+    New,
+    Controversial,
+    Old,
+    Top,
+    QAndA,
+}

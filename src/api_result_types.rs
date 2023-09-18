@@ -26,7 +26,7 @@ impl<'de> Deserialize<'de> for EditTimestamp {
 #[derive(Debug, Clone)]
 pub enum ApiData {
     Single(RedditData),
-    Collection(Vec<RedditData>)
+    Collection(Vec<RedditData>),
 }
 
 impl<'de> Deserialize<'de> for ApiData {
@@ -47,11 +47,12 @@ impl<'de> Deserialize<'de> for ApiData {
                     .map_err(|e| serde::de::Error::custom(e.to_string()))?;
                 Ok(ApiData::Single(reddit_data))
             }
-            _ => Err(serde::de::Error::custom("Invalid JSON structure for ApiData")),
+            _ => Err(serde::de::Error::custom(
+                "Invalid JSON structure for ApiData",
+            )),
         }
     }
 }
-
 
 #[derive(Debug, Clone)]
 pub enum RedditData {
@@ -61,15 +62,15 @@ pub enum RedditData {
     /// Wiki page
     WikiPage(WikiPageData),
     /// Post listing, Post
-    T3(T3Data)
+    T3(T3Data),
 }
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct ListingData {
-    dist: i32,
-    after: String,
-    children: Vec<RedditData>,
-    before: String
+    pub dist: Option<i32>,
+    pub after: Option<String>,
+    pub children: Vec<RedditData>,
+    pub before: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -108,44 +109,43 @@ impl<'de> Deserialize<'de> for RedditData {
 }
 
 #[derive(Debug, Clone, Deserialize)]
-pub struct WikiPageData {
-}
+pub struct WikiPageData {}
 
 /// Comment
 #[derive(Debug, Clone, Deserialize)]
 pub struct T1Data {
-    id: String,
-    subreddit: String,
-    body: String,
-    score: i32,
-    author: String,
-    edited: EditTimestamp,
-    locked: bool,
-    stickied: bool,
-    created_utc: u64
+    pub id: String,
+    pub subreddit: String,
+    pub body: String,
+    pub score: i32,
+    pub author: String,
+    pub edited: EditTimestamp,
+    pub locked: bool,
+    pub stickied: bool,
+    //pub created_utc: u64,
 }
 
 /// Post listing, post
 #[derive(Debug, Clone, Deserialize)]
 pub struct T3Data {
-    id: String,
-    subreddit: String,
-    selftext: String,
-    title: String,
-    score: i32,
-    author: String,
-    edited: EditTimestamp,
-    locked: bool,
-    stickied: bool,
-    spoiler: bool,
-    created_utc: u64,
-    thumbnail: Option<String>,
-    upvote_ratio: f32,
-    archived: bool,
-    pinned: bool,
-    over_18: bool,
-    author_flair_text: Option<String>,
-    num_comments: u32,
-    subreddit_subscribers: u32,
-    is_video: bool
+    pub id: String,
+    pub subreddit: String,
+    pub selftext: String,
+    pub title: String,
+    pub score: i32,
+    pub author: String,
+    pub edited: EditTimestamp,
+    pub locked: bool,
+    pub stickied: bool,
+    pub spoiler: bool,
+    //pub created_utc: u64,
+    pub thumbnail: Option<String>,
+    pub upvote_ratio: f32,
+    pub archived: bool,
+    pub pinned: bool,
+    pub over_18: bool,
+    pub author_flair_text: Option<String>,
+    pub num_comments: u32,
+    pub subreddit_subscribers: u32,
+    pub is_video: bool,
 }

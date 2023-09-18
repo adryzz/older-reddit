@@ -1,10 +1,11 @@
+mod api;
+mod api_result_types;
+mod api_types;
 mod comments;
 mod subreddit;
 mod utils;
-mod api_types;
-mod api_result_types;
 
-use axum::{routing::get, Router, response::Redirect};
+use axum::{response::Redirect, routing::get, Router};
 
 #[tokio::main]
 async fn main() {
