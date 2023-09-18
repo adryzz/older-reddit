@@ -1,15 +1,22 @@
 use askama::Template;
-use axum::{extract::{Path, Query}, headers::UserAgent, http::StatusCode, TypedHeader};
+use axum::{
+    extract::{Path, Query},
+    headers::UserAgent,
+    http::StatusCode,
+    TypedHeader,
+};
 
 use crate::{
-    api_result_types::{T1Data, T3Data}, api_types::CommentSortingMode,
+    api::CommentsQuery,
+    api_result_types::{T1Data, T3Data},
+    api_types::CommentSortingMode,
 };
 
 #[derive(Template)]
 #[template(path = "comments.html")]
 pub struct SubredditTemplate {
     subreddit: String,
-    data: (T3Data, Vec<T1Data>),
+    data: CommentsQuery,
 }
 
 pub async fn comments(

@@ -11,14 +11,15 @@ impl<'de> Deserialize<'de> for EditTimestamp {
         let value: serde_json::Value = Deserialize::deserialize(deserializer)?;
         match value {
             serde_json::Value::Number(num) => {
+                dbg!(&num);
                 if let Some(num) = num.as_u64() {
                     Ok(EditTimestamp(Some(num)))
                 } else {
-                    Err(serde::de::Error::custom("Invalid number format"))
+                    Err(serde::de::Error::custom("invalid number format"))
                 }
             }
             serde_json::Value::Bool(false) => Ok(EditTimestamp(None)),
-            _ => Err(serde::de::Error::custom("Invalid value for EditTimestamp")),
+            _ => Err(serde::de::Error::custom("invalid value for EditTimestamp")),
         }
     }
 }
@@ -48,7 +49,7 @@ impl<'de> Deserialize<'de> for ApiData {
                 Ok(ApiData::Single(reddit_data))
             }
             _ => Err(serde::de::Error::custom(
-                "Invalid JSON structure for ApiData",
+                "invalid JSON structure for ApiData",
             )),
         }
     }
@@ -103,7 +104,7 @@ impl<'de> Deserialize<'de> for RedditData {
                 Ok(RedditData::T3(t3_data))
             }
             // Handle other variants as needed
-            _ => Err(serde::de::Error::custom("Unknown variant")),
+            _ => Err(serde::de::Error::custom("unknown variant")),
         }
     }
 }
@@ -122,7 +123,7 @@ pub struct T1Data {
     pub edited: EditTimestamp,
     pub locked: bool,
     pub stickied: bool,
-    //pub created_utc: u64,
+    pub created_utc: u64,
 }
 
 /// Post listing, post
@@ -138,7 +139,7 @@ pub struct T3Data {
     pub locked: bool,
     pub stickied: bool,
     pub spoiler: bool,
-    //pub created_utc: u64,
+    pub created_utc: u64,
     pub thumbnail: Option<String>,
     pub upvote_ratio: f32,
     pub archived: bool,

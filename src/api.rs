@@ -2,17 +2,24 @@ use reqwest::{Client, StatusCode};
 
 use crate::{
     api_result_types::{ApiData, RedditData, T1Data, T3Data},
-    api_types::CommentSortingMode,
+    api_types::{CommentSortingMode, SortingMode, TopSortingTime},
 };
 
 use crate::utils;
+
+pub struct CommentsQuery {
+    pub post: T3Data,
+    pub comments: Vec<T1Data>,
+    pub after: Option<String>,
+    pub before: Option<String>,
+}
 
 pub async fn comments(
     client: &mut Client,
     subreddit: &str,
     post_id: &str,
     sorting: Option<CommentSortingMode>,
-) -> Result<(T3Data, Vec<T1Data>), StatusCode> {
+) -> Result<CommentsQuery, StatusCode> {
     let sort = sorting.unwrap_or_default();
 
     let args = match sort {
@@ -115,5 +122,118 @@ pub async fn comments(
         })
         .collect();
 
-    return Ok((post, comments));
+    return Ok(CommentsQuery {
+        post,
+        comments,
+        after: second_listing.after.clone(),
+        before: second_listing.before.clone(),
+    });
+}
+
+pub struct SubredditQuery {
+    pub posts: Vec<T3Data>,
+    pub after: Option<String>,
+    pub before: Option<String>,
+}
+
+// ?after=t3_16kksoi
+pub async fn subreddit(
+    client: &mut Client,
+    subreddit: &str,
+    sorting: Option<SortingMode>,
+    after: Option<&str>,
+) -> Result<SubredditQuery, StatusCode> {
+    let sort = sorting.unwrap_or_default();
+
+    let end_string = match sort {
+        SortingMode::Default => ".json",
+        SortingMode::Hot => "/hot.json",
+        SortingMode::New => "/new.json",
+        SortingMode::Rising => "/rising.json",
+        SortingMode::Controversial => "/controversial.json",
+        SortingMode::Top(t) => match t {
+            TopSortingTime::PastHour => "/top.json?t=hour",
+            TopSortingTime::Past24Hours => "/top.json?t=day",
+            TopSortingTime::PastWeek => "/top.json?t=week",
+            TopSortingTime::PastMonth => "/top.json?t=month",
+            TopSortingTime::PastYear => "/top.json?t=year",
+            TopSortingTime::AllTime => "/top.json?t=all",
+        },
+    };
+
+    let url = if let Some(s) = after {
+        if let SortingMode::Top(_) = sort {
+            format!(
+                "{}/r/{}{}&after={}",
+                utils::get_reddit_domain(),
+                subreddit,
+                end_string,
+                s
+            )
+        } else {
+            format!(
+                "{}/r/{}{}?after={}",
+                utils::get_reddit_domain(),
+                subreddit,
+                end_string,
+                s
+            )
+        }
+    } else {
+        format!("{}/r/{}{}", utils::get_reddit_domain(), subreddit, end_string)
+    };
+
+    let response = match client.get(url).send().await {
+        Ok(r) => {
+            if r.status() == StatusCode::OK {
+                r
+            } else {
+                return Err(r.status());
+            }
+        }
+        Err(e) => {
+            tracing::error!("{}", e);
+            return Err(StatusCode::INTERNAL_SERVER_ERROR);
+        }
+    };
+
+    let res = match response.json::<ApiData>().await {
+        Ok(j) => j,
+        Err(e) => {
+            tracing::error!("{}", e);
+            return Err(StatusCode::INTERNAL_SERVER_ERROR);
+        }
+    };
+
+    let listing = if let ApiData::Single(RedditData::Listing(l)) = res {
+        l
+    } else {
+        tracing::error!("Invalid schema 1");
+        return Err(StatusCode::INTERNAL_SERVER_ERROR);
+    };
+
+    let all_t3 = listing
+        .children
+        .iter()
+        .all(|child| matches!(child, RedditData::T3(_)));
+
+    if !all_t3 {
+        tracing::error!("Wrong schema 2");
+        return Err(StatusCode::INTERNAL_SERVER_ERROR);
+    }
+
+    let posts: Vec<T3Data> = listing
+        .children
+        .into_iter()
+        .filter_map(|child| match child {
+            RedditData::T3(t3_data) => Some(t3_data),
+            _ => None,
+        })
+        .collect();
+
+    Ok(SubredditQuery {
+        posts,
+        after: listing.after,
+        before: listing.before,
+    })
 }

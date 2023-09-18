@@ -4,15 +4,15 @@
 
 {% block content %}
 
-{% for post in data.children %}
+{% for post in data.posts %}
     <div class="subreddit-post">
-        <small>{{post.data.score}}</small>
-        <a href="/r/{{post.data.subreddit}}/comments/{{post.data.id}}">{{post.data.title}}</a>
+        <small>{{post.score}}</small>
+        <a href="/r/{{post.subreddit}}/comments/{{post.id}}">{{post.title}}</a>
         <br>
-        {% if subreddit != post.data.subreddit %}
-            <small>Submitted [time] by <a href="/u/{{post.data.author}}">{{post.data.author}}</a> to <a href="/r/{{post.data.subreddit}}">r/{{post.data.subreddit}}</a> - {{post.data.num_comments}} comments</small>
+        {% if subreddit != post.subreddit %}
+            <small>Submitted [time] by <a href="/u/{{post.author}}">{{post.author}}</a> to <a href="/r/{{post.subreddit}}">r/{{post.subreddit}}</a> - {{post.num_comments}} comments</small>
         {% else %}
-            <small>Submitted [time] by <a href="/u/{{post.data.author}}">{{post.data.author}}</a> - {{post.data.num_comments}} comments</small>
+            <small>Submitted [time] by <a href="/u/{{post.author}}">{{post.author}}</a> - {{post.num_comments}} comments</small>
         {% endif %}
     </div>
 {% endfor %}
