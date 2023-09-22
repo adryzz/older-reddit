@@ -1,0 +1,11 @@
+{% macro subreddit_meta(sub) %}
+{% if subreddit != sub %}
+to <a href="/r/{{post.subreddit}}">r/{{sub}}</a>
+{% endif %}
+{% endmacro %}
+
+{% macro render_flair(flair) %}
+{% if let Some(f) = flair %}
+<div class="flair" style="background-color: {{f.1}};">{{f.0}}</div>
+{% endif %}
+{% endmacro %}

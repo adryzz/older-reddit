@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{%- import "utils.html" as utils -%}
 
 {% block title %}r/{{subreddit}} - Older reddit{% endblock %}
 
@@ -8,23 +9,10 @@
     <div class="subreddit-post">
         <small>{{post.score}}</small>
         <a href="/r/{{post.subreddit}}/comments/{{post.id}}">{{post.title}}</a>
-        {% if let Some(f) = post.get_link_flair() %}
-        <div class="flair" style="background-color: {{f.1}};">{{f.0}}</div>
-        {% endif %}
+        {% call utils::render_flair(post.get_link_flair()) %}
         <br>
-        {% if subreddit != post.subreddit %}
-            {% if let Some(f) = post.get_author_flair() %}
-                <small>Submitted [time] by <a href="/u/{{post.author}}">{{post.author}}</a> to <a href="/r/{{post.subreddit}}">r/{{post.subreddit}}</a><div class="flair" style="background-color: {{f.1}};">{{f.0}}</div> - {{post.num_comments}} comments</small>
-            {% else %}
-                <small>Submitted [time] by <a href="/u/{{post.author}}">{{post.author}}</a> to <a href="/r/{{post.subreddit}}">r/{{post.subreddit}}</a> - {{post.num_comments}} comments</small>
-            {% endif %}
-        {% else %}
-            {% if let Some(f) = post.get_author_flair() %}
-                <small>Submitted [time] by <a href="/u/{{post.author}}">{{post.author}}</a> to <a href="/r/{{post.subreddit}}">r/{{post.subreddit}}</a><div class="flair" style="background-color: {{f.1}};">{{f.0}}</div> - {{post.num_comments}} comments</small>
-            {% else %}
-                <small>Submitted [time] by <a href="/u/{{post.author}}">{{post.author}}</a> to <a href="/r/{{post.subreddit}}">r/{{post.subreddit}}</a> - {{post.num_comments}} comments</small>
-            {% endif %}
-        {% endif %}
+        <small>Submitted [time] by <a href="/u/{{post.author}}">{{post.author}}</a>{% call utils::render_flair(post.get_author_flair()) %} {% call utils::subreddit_meta(post.subreddit) %} - {{post.num_comments}} comments</small>
     </div>
 {% endfor %}
 {% endblock %}
+

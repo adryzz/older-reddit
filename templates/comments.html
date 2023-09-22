@@ -1,19 +1,15 @@
 {% extends "base.html" %}
+{%- import "utils.html" as utils -%}
 
 {% block title %}{{data.post.title}} - r/{{subreddit}} - Older reddit{% endblock %}
 
 {% block content %}
 <div class="subreddit-post">
     <h2 class="post-title">{{data.post.title}}</h2>
-    {% if let Some(f) = data.post.get_link_flair() %}
-    <div class="flair" style="background-color: {{f.1}};">{{f.0}}</div>
-    {% endif %}
+    {% call utils::render_flair(data.post.get_link_flair()) %}
+
     <div class="post-metadata">
-        {% if let Some(f) = data.post.get_author_flair() %}
-        <small>{{data.post.score}} - submitted [time] by <a href="/u/{{data.post.author}}">{{data.post.author}}</a> <div class="flair" style="background-color: {{f.1}};">{{f.0}}</div></small>
-        {% else %}
-        <small>{{data.post.score}} - submitted [time] by <a href="/u/{{data.post.author}}">{{data.post.author}}</a></small>
-        {% endif %}
+        <small>{{data.post.score}} - submitted [time] by <a href="/u/{{data.post.author}}">{{data.post.author}}</a>{% call utils::render_flair(data.post.get_author_flair()) %} </small>
     </div>
     {% match data.get_post_type() %}
         {% when crate::api::PostType::Text %}
