@@ -21,7 +21,7 @@
         {% when crate::api::PostType::Image %}
             {% if let Some(u) = data.get_url() %}
             <div class="image-container">
-                <img src="{{u}}" class="image-post">
+                <a href="{{u}}"><img src="{{u}}" class="image-post"></a>
             </div>
             {% endif %}
         {% when crate::api::PostType::Gallery %}
