@@ -8,11 +8,22 @@
     <div class="subreddit-post">
         <small>{{post.score}}</small>
         <a href="/r/{{post.subreddit}}/comments/{{post.id}}">{{post.title}}</a>
+        {% if let Some(f) = post.get_link_flair() %}
+        <div class="flair" style="background-color: {{f.1}};">{{f.0}}</div>
+        {% endif %}
         <br>
         {% if subreddit != post.subreddit %}
-            <small>Submitted [time] by <a href="/u/{{post.author}}">{{post.author}}</a> to <a href="/r/{{post.subreddit}}">r/{{post.subreddit}}</a> - {{post.num_comments}} comments</small>
+            {% if let Some(f) = post.get_author_flair() %}
+                <small>Submitted [time] by <a href="/u/{{post.author}}">{{post.author}}</a> to <a href="/r/{{post.subreddit}}">r/{{post.subreddit}}</a><div class="flair" style="background-color: {{f.1}};">{{f.0}}</div> - {{post.num_comments}} comments</small>
+            {% else %}
+                <small>Submitted [time] by <a href="/u/{{post.author}}">{{post.author}}</a> to <a href="/r/{{post.subreddit}}">r/{{post.subreddit}}</a> - {{post.num_comments}} comments</small>
+            {% endif %}
         {% else %}
-            <small>Submitted [time] by <a href="/u/{{post.author}}">{{post.author}}</a> - {{post.num_comments}} comments</small>
+            {% if let Some(f) = post.get_author_flair() %}
+                <small>Submitted [time] by <a href="/u/{{post.author}}">{{post.author}}</a> to <a href="/r/{{post.subreddit}}">r/{{post.subreddit}}</a><div class="flair" style="background-color: {{f.1}};">{{f.0}}</div> - {{post.num_comments}} comments</small>
+            {% else %}
+                <small>Submitted [time] by <a href="/u/{{post.author}}">{{post.author}}</a> to <a href="/r/{{post.subreddit}}">r/{{post.subreddit}}</a> - {{post.num_comments}} comments</small>
+            {% endif %}
         {% endif %}
     </div>
 {% endfor %}

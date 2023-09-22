@@ -16,26 +16,6 @@ pub struct CommentsQuery {
 }
 
 impl CommentsQuery {
-    pub fn get_link_flair(&self) -> Option<(&str, &str)> {
-        match (
-            &self.post.link_flair_text,
-            &self.post.link_flair_background_color,
-        ) {
-            (Some(val1), Some(val2)) => Some((val1, val2)),
-            _ => None,
-        }
-    }
-
-    pub fn get_author_flair(&self) -> Option<(&str, &str)> {
-        match (
-            &self.post.author_flair_text,
-            &self.post.author_flair_background_color,
-        ) {
-            (Some(val1), Some(val2)) => Some((val1, val2)),
-            _ => None,
-        }
-    }
-
     pub fn get_post_type(&self) -> PostType {
         if self.post.is_video {
             return PostType::Video;
@@ -197,6 +177,32 @@ pub struct SubredditQuery {
     pub posts: Vec<T3Data>,
     pub after: Option<String>,
     pub before: Option<String>,
+}
+
+impl T3Data {
+    pub fn get_author_flair(&self) -> Option<(&str, &str)> {
+        match &self.author_flair_text {
+            Some(t) => {
+                match &self.author_flair_background_color {
+                    Some(c) => Some((t, c)),
+                    None => Some((t, "#000000"))
+                }
+            },
+            None => None
+        }
+    }
+
+    pub fn get_link_flair(&self) -> Option<(&str, &str)> {
+        match &self.link_flair_text {
+            Some(t) => {
+                match &self.link_flair_background_color {
+                    Some(c) => Some((t, c)),
+                    None => Some((t, "#000000"))
+                }
+            },
+            None => None
+        }
+    }
 }
 
 // ?after=t3_16kksoi

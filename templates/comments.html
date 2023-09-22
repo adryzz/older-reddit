@@ -5,6 +5,16 @@
 {% block content %}
 <div class="subreddit-post">
     <h2 class="post-title">{{data.post.title}}</h2>
+    {% if let Some(f) = data.post.get_link_flair() %}
+    <div class="flair" style="background-color: {{f.1}};">{{f.0}}</div>
+    {% endif %}
+    <div class="post-metadata">
+        {% if let Some(f) = data.post.get_author_flair() %}
+        <small>{{data.post.score}} - submitted [time] by <a href="/u/{{data.post.author}}">{{data.post.author}}</a> <div class="flair" style="background-color: {{f.1}};">{{f.0}}</div></small>
+        {% else %}
+        <small>{{data.post.score}} - submitted [time] by <a href="/u/{{data.post.author}}">{{data.post.author}}</a></small>
+        {% endif %}
+    </div>
     {% match data.get_post_type() %}
         {% when crate::api::PostType::Text %}
             {{data.post.selftext.clone()|markdown}}
