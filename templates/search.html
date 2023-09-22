@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{%- import "utils.html" as utils -%}
+
+{% block title %}Search - r/{{subreddit}} - Older reddit{% endblock %}
+
+{% block content %}
+{% for post in data.posts %}
+    <div class="subreddit-post">
+        <small>{{post.score}}</small>
+        <a href="/r/{{post.subreddit}}/comments/{{post.id}}">{{post.title}}</a>
+        {% call utils::render_flair(post.get_link_flair()) %}
+        <br>
+        <small>Submitted [time] by <a href="/u/{{post.author}}">{{post.author}}</a>{% call utils::render_flair(post.get_author_flair()) %} {% call utils::subreddit_meta(post.subreddit) %} - {{post.num_comments}} comments</small>
+    </div>
+{% endfor %}
+{% endblock %}

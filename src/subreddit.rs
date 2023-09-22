@@ -8,7 +8,7 @@ use axum::{
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 
-use crate::{api::SubredditQuery, api_result_types::T3Data, api_types::SortingMode, utils};
+use crate::{api::SubredditQuery, api_result_types::T3Data, api_types::{SortingMode, TopSortingTime}, utils};
 
 #[derive(Template)]
 #[template(path = "subreddit.html")]
@@ -19,23 +19,24 @@ pub struct SubredditTemplate {
 
 pub async fn subreddit(
     Path(subreddit): Path<String>,
-    sorting: Option<Query<SortingMode>>,
-    after: Option<Query<String>>,
+    Query(params): Query<SubredditParams>,
     TypedHeader(user_agent): TypedHeader<UserAgent>,
     State(client): State<Client>,
 ) -> Result<SubredditTemplate, StatusCode> {
-    let sort = sorting.map(|v| v.0);
-
-    let after = after.map(|v| v.0);
-
     let data = crate::api::subreddit(
         &client,
         &subreddit,
-        sort,
-        after.as_deref(),
+        None,
+        params.after.as_deref(),
         user_agent.as_str(),
     )
     .await?;
 
     Ok(SubredditTemplate { subreddit, data })
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct SubredditParams {
+    t: Option<TopSortingTime>,
+    after: Option<String>,
 }
