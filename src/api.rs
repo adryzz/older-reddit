@@ -1,4 +1,5 @@
 use reqwest::{Client, StatusCode};
+use tracing_subscriber::util;
 
 use crate::{
     api_result_types::{ApiData, RedditData, T1Data, T3Data},
@@ -14,6 +15,58 @@ pub struct CommentsQuery {
     pub before: Option<String>,
 }
 
+impl CommentsQuery {
+    pub fn get_link_flair(&self) -> Option<(&str, &str)> {
+        match (
+            &self.post.link_flair_text,
+            &self.post.link_flair_background_color,
+        ) {
+            (Some(val1), Some(val2)) => Some((val1, val2)),
+            _ => None,
+        }
+    }
+
+    pub fn get_author_flair(&self) -> Option<(&str, &str)> {
+        match (
+            &self.post.author_flair_text,
+            &self.post.author_flair_background_color,
+        ) {
+            (Some(val1), Some(val2)) => Some((val1, val2)),
+            _ => None,
+        }
+    }
+
+    pub fn get_post_type(&self) -> PostType {
+        if self.post.is_video {
+            return PostType::Video;
+        }
+
+        if self.post.is_gallery.is_some() {
+            return PostType::Gallery;
+        }
+
+        if self.post.is_reddit_media_domain {
+            return PostType::Image;
+        }
+
+        if self.post.url.is_some() {
+            return PostType::Link;
+        }
+
+        return PostType::Text;
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
+pub enum PostType {
+    Text,
+    Link,
+    Gallery,
+    Video,
+    Image,
+    Poll,
+}
+
 pub async fn comments(
     client: &mut Client,
     subreddit: &str,
@@ -22,27 +75,26 @@ pub async fn comments(
 ) -> Result<CommentsQuery, StatusCode> {
     let sort = sorting.unwrap_or_default();
 
-    let args = match sort {
-        CommentSortingMode::Suggested => "",
-        CommentSortingMode::Best => "?sort=confidence",
-        CommentSortingMode::Controversial => "?sort=controversial",
-        CommentSortingMode::Old => "?sort=old",
-        CommentSortingMode::New => "?sort=new",
-        CommentSortingMode::QAndA => "?sort=qa",
-        CommentSortingMode::Top => "?sort=top",
+    let mut base = utils::get_reddit_domain();
+    base.add_route("r");
+    base.add_route(subreddit);
+    base.add_route("comments");
+    base.add_route(&format!("{}.json", post_id));
+
+
+    match sort {
+        CommentSortingMode::Suggested => &mut base,
+        CommentSortingMode::Best => base.add_param("sort", "confidence"),
+        CommentSortingMode::Controversial => base.add_param("sort", "controversial"),
+        CommentSortingMode::Old => base.add_param("sort", "old"),
+        CommentSortingMode::New => base.add_param("sort", "new"),
+        CommentSortingMode::QAndA => base.add_param("sort", "qa"),
+        CommentSortingMode::Top => base.add_param("sort", "top"),
     };
 
-    let response = match client
-        .get(format!(
-            "{}/r/{}/comments/{}.json{}",
-            utils::get_reddit_domain(),
-            &subreddit,
-            &post_id,
-            args
-        ))
-        .send()
-        .await
-    {
+    let url = base.build();
+
+    let response = match client.get(&url).send().await {
         Ok(r) => {
             if r.status() == StatusCode::OK {
                 r
@@ -109,7 +161,7 @@ pub async fn comments(
 
     if !all_t1 {
         tracing::error!("Wrong schema 7");
-        return Err(StatusCode::INTERNAL_SERVER_ERROR);
+        //return Err(StatusCode::INTERNAL_SERVER_ERROR);
     }
 
     let comments: Vec<T1Data> = second_listing
@@ -145,43 +197,34 @@ pub async fn subreddit(
 ) -> Result<SubredditQuery, StatusCode> {
     let sort = sorting.unwrap_or_default();
 
-    let end_string = match sort {
-        SortingMode::Default => ".json",
-        SortingMode::Hot => "/hot.json",
-        SortingMode::New => "/new.json",
-        SortingMode::Rising => "/rising.json",
-        SortingMode::Controversial => "/controversial.json",
-        SortingMode::Top(t) => match t {
-            TopSortingTime::PastHour => "/top.json?t=hour",
-            TopSortingTime::Past24Hours => "/top.json?t=day",
-            TopSortingTime::PastWeek => "/top.json?t=week",
-            TopSortingTime::PastMonth => "/top.json?t=month",
-            TopSortingTime::PastYear => "/top.json?t=year",
-            TopSortingTime::AllTime => "/top.json?t=all",
-        },
+    let mut base = utils::get_reddit_domain();
+    base.add_route("r");
+    base.add_route(subreddit);
+
+    match sort {
+        SortingMode::Default => base.add_route(".json"),
+        SortingMode::Hot => base.add_route("hot.json"),
+        SortingMode::New => base.add_route("new.json"),
+        SortingMode::Rising => base.add_route("rising.json"),
+        SortingMode::Controversial => base.add_route("controversial.json"),
+        SortingMode::Top(t) => {
+            base.add_route("top.json");
+            match t {
+                TopSortingTime::PastHour => base.add_param("t", "hour"),
+                TopSortingTime::Past24Hours => base.add_param("t", "day"),
+                TopSortingTime::PastWeek => base.add_param("t", "week"),
+                TopSortingTime::PastMonth => base.add_param("t", "month"),
+                TopSortingTime::PastYear => base.add_param("t", "year"),
+                TopSortingTime::AllTime => base.add_param("t", "all"),
+            }
+        }
     };
 
-    let url = if let Some(s) = after {
-        if let SortingMode::Top(_) = sort {
-            format!(
-                "{}/r/{}{}&after={}",
-                utils::get_reddit_domain(),
-                subreddit,
-                end_string,
-                s
-            )
-        } else {
-            format!(
-                "{}/r/{}{}?after={}",
-                utils::get_reddit_domain(),
-                subreddit,
-                end_string,
-                s
-            )
-        }
-    } else {
-        format!("{}/r/{}{}", utils::get_reddit_domain(), subreddit, end_string)
-    };
+    if let Some(s) = after {
+        base.add_param("after", s);
+    }
+
+    let url = base.build();
 
     let response = match client.get(url).send().await {
         Ok(r) => {
@@ -219,7 +262,7 @@ pub async fn subreddit(
 
     if !all_t3 {
         tracing::error!("Wrong schema 2");
-        return Err(StatusCode::INTERNAL_SERVER_ERROR);
+        //return Err(StatusCode::INTERNAL_SERVER_ERROR);
     }
 
     let posts: Vec<T3Data> = listing

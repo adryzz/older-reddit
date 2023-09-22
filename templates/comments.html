@@ -5,6 +5,31 @@
 {% block content %}
 <div class="subreddit-post">
     <h2 class="post-title">{{data.post.title}}</h2>
-    {{data.post.selftext.clone()|markdown}}
+    {% match data.get_post_type() %}
+        {% when crate::api::PostType::Text %}
+            {{data.post.selftext.clone()|markdown}}
+        {% when crate::api::PostType::Link %}
+            {% if let Some(u) = data.post.url %}
+            <a href="{{u}}">{{u}}</a>
+            {% endif %}
+        {% when crate::api::PostType::Image %}
+            {% if let Some(u) = data.post.url %}
+            <img src="{{u}}" class="image-post">
+            {% endif %}
+        {% when crate::api::PostType::Gallery %}
+        <p>Can't display galleries right now</p>
+        {% when crate::api::PostType::Poll %}
+        <p>Can't display polls right now</p>
+        {% when crate::api::PostType::Video %}
+        <p>Videos cannot be displayed.</p>
+    {% endmatch %}
+</div>
+<div class="comments-container">
+    {% for comment in data.comments %} 
+    <div class="comment">
+        <small>{{comment.score}} - <a href="/u/{{comment.author}}">{{comment.author}}</a> - [time]</small>
+        {{comment.body.clone()|markdown}}
+    </div>
+    {% endfor %}
 </div>
 {% endblock %}

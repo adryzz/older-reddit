@@ -64,6 +64,8 @@ pub enum RedditData {
     WikiPage(WikiPageData),
     /// Post listing, Post
     T3(T3Data),
+    /// Anything else, to be discarded
+    Unknown(String),
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -104,7 +106,7 @@ impl<'de> Deserialize<'de> for RedditData {
                 Ok(RedditData::T3(t3_data))
             }
             // Handle other variants as needed
-            _ => Err(serde::de::Error::custom("unknown variant")),
+            _ => Ok(RedditData::Unknown(inner_data.kind)),
         }
     }
 }
@@ -120,10 +122,11 @@ pub struct T1Data {
     pub body: String,
     pub score: i32,
     pub author: String,
-    pub edited: EditTimestamp,
+    //pub edited: EditTimestamp,
     pub locked: bool,
     pub stickied: bool,
-    pub created_utc: u64,
+    //pub created_utc: u64,
+    //pub replies: Option<ListingData>
 }
 
 /// Post listing, post
@@ -135,18 +138,27 @@ pub struct T3Data {
     pub title: String,
     pub score: i32,
     pub author: String,
-    pub edited: EditTimestamp,
+    //pub edited: EditTimestamp,
     pub locked: bool,
     pub stickied: bool,
     pub spoiler: bool,
-    pub created_utc: u64,
+    //pub created_utc: u64,
     pub thumbnail: Option<String>,
     pub upvote_ratio: f32,
     pub archived: bool,
     pub pinned: bool,
     pub over_18: bool,
     pub author_flair_text: Option<String>,
+    pub author_flair_background_color: Option<String>,
     pub num_comments: u32,
     pub subreddit_subscribers: u32,
     pub is_video: bool,
+    pub is_gallery: Option<bool>,
+    pub is_reddit_media_domain: bool,
+    pub link_flair_text: Option<String>,
+    pub link_flair_background_color: Option<String>,
+    pub url: Option<String>,
+    // gallery_data
+    // media_metadata
+    // poll_data
 }

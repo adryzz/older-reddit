@@ -1,0 +1,7 @@
+{% if let Some(b_id) = data.before %}
+<a href="{}">previous</a>
+{% endif %}
+
+{% if let Some(a_id) = data.after %}
+<a href="{}">next</a>
+{% endif %}

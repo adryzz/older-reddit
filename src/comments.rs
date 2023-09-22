@@ -14,7 +14,7 @@ use crate::{
 
 #[derive(Template)]
 #[template(path = "comments.html")]
-pub struct SubredditTemplate {
+pub struct CommentsTemplate {
     subreddit: String,
     data: CommentsQuery,
 }
@@ -23,7 +23,7 @@ pub async fn comments(
     Path((subreddit, id)): Path<(String, String)>,
     sorting: Option<Query<CommentSortingMode>>,
     TypedHeader(user_agent): TypedHeader<UserAgent>,
-) -> Result<SubredditTemplate, StatusCode> {
+) -> Result<CommentsTemplate, StatusCode> {
     let mut client = reqwest::ClientBuilder::new()
         .user_agent(user_agent.as_str())
         .build()
@@ -32,6 +32,6 @@ pub async fn comments(
     let sort = sorting.map(|v| v.0);
 
     let data = crate::api::comments(&mut client, &subreddit, &id, sort).await?;
-
-    Ok(SubredditTemplate { subreddit, data })
+    dbg!(data.get_post_type());
+    Ok(CommentsTemplate { subreddit, data })
 }
