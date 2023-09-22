@@ -6,7 +6,7 @@
 {% block content %}
 <div class="subreddit-post">
     <h2 class="post-title">{{data.post.title}}</h2>
-    {% call utils::render_flair(data.post.get_link_flair()) %}
+    <div class="center">{% call utils::render_flair(data.post.get_link_flair()) %}</div>
 
     <div class="post-metadata">
         <small>{{data.post.score}} - submitted [time] by <a href="/u/{{data.post.author}}">{{data.post.author}}</a>{% call utils::render_flair(data.post.get_author_flair()) %} </small>
@@ -44,15 +44,70 @@
 {% endblock %}
 
 {% macro render_replies(listing) %}
-{% if let ReplyList::Replies(list) = listing %}
-{% for child in list.children %}
-{% if let RedditData::T1(comment) = child %}
-<div class="comment">
-    <small>{{comment.score}} - <a href="/u/{{comment.author}}">{{comment.author}}</a>{% call utils::render_flair(comment.get_author_flair()) %} - [time]</small>
-    {{comment.body.clone()|markdown}}
-    
-</div>
-{% endif %}
-{% endfor %}
-{% endif %}
+    {% if let ReplyList::Replies(list) = listing %}
+        {% for child in list.children %}
+            {% if let RedditData::T1(comment) = child %}
+                <div class="comment">
+                    <small>{{comment.score}} - <a href="/u/{{comment.author}}">{{comment.author}}</a>{% call utils::render_flair(comment.get_author_flair()) %} - [time]</small>
+                    {{comment.body.clone()|markdown}}
+                    {% call render_replies1(comment.replies) %}
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endmacro %}
+
+{% macro render_replies1(listing) %}
+    {% if let ReplyList::Replies(list) = listing %}
+        {% for child in list.children %}
+            {% if let RedditData::T1(comment) = child %}
+                <div class="comment">
+                    <small>{{comment.score}} - <a href="/u/{{comment.author}}">{{comment.author}}</a>{% call utils::render_flair(comment.get_author_flair()) %} - [time]</small>
+                    {{comment.body.clone()|markdown}}
+                    {% call render_replies2(comment.replies) %}
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endmacro %}
+
+{% macro render_replies2(listing) %}
+    {% if let ReplyList::Replies(list) = listing %}
+        {% for child in list.children %}
+            {% if let RedditData::T1(comment) = child %}
+                <div class="comment">
+                    <small>{{comment.score}} - <a href="/u/{{comment.author}}">{{comment.author}}</a>{% call utils::render_flair(comment.get_author_flair()) %} - [time]</small>
+                    {{comment.body.clone()|markdown}}
+                    {% call render_replies3(comment.replies) %}
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endmacro %}
+
+{% macro render_replies3(listing) %}
+    {% if let ReplyList::Replies(list) = listing %}
+        {% for child in list.children %}
+            {% if let RedditData::T1(comment) = child %}
+                <div class="comment">
+                    <small>{{comment.score}} - <a href="/u/{{comment.author}}">{{comment.author}}</a>{% call utils::render_flair(comment.get_author_flair()) %} - [time]</small>
+                    {{comment.body.clone()|markdown}}
+                    {% call render_replies4(comment.replies) %}
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endmacro %}
+
+{% macro render_replies4(listing) %}
+    {% if let ReplyList::Replies(list) = listing %}
+        {% for child in list.children %}
+            {% if let RedditData::T1(comment) = child %}
+                <div class="comment">
+                    <small>{{comment.score}} - <a href="/u/{{comment.author}}">{{comment.author}}</a>{% call utils::render_flair(comment.get_author_flair()) %} - [time]</small>
+                    {{comment.body.clone()|markdown}}
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
 {% endmacro %}
