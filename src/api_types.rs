@@ -33,3 +33,22 @@ pub enum CommentSortingMode {
     Top,
     QAndA,
 }
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Default, Deserialize)]
+pub enum SearchSortingMode {
+    #[default]
+    Relevance,
+    New,
+    Comments
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Default, Deserialize)]
+pub enum SearchTimeOrdering {
+    PastHour,
+    Past24Hours,
+    PastWeek,
+    PastMonth,
+    PastYear,
+    #[default]
+    AllTime,
+}

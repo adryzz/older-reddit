@@ -3,7 +3,7 @@ use tracing_subscriber::util;
 
 use crate::{
     api_result_types::{ApiData, RedditData, T1Data, T3Data},
-    api_types::{CommentSortingMode, SortingMode, TopSortingTime},
+    api_types::{CommentSortingMode, SortingMode, TopSortingTime, SearchSortingMode, SearchTimeOrdering},
 };
 
 use crate::utils;
@@ -251,6 +251,113 @@ pub async fn subreddit(
             }
         }
     };
+
+    if let Some(s) = after {
+        base.add_param("after", s);
+    }
+
+    let url = base.build();
+
+    let response = match client.get(url).header(USER_AGENT, user_agent).send().await {
+        Ok(r) => {
+            if r.status() == StatusCode::OK {
+                r
+            } else {
+                return Err(r.status());
+            }
+        }
+        Err(e) => {
+            tracing::error!("{}", e);
+            return Err(StatusCode::INTERNAL_SERVER_ERROR);
+        }
+    };
+
+    let res = match response.json::<ApiData>().await {
+        Ok(j) => j,
+        Err(e) => {
+            tracing::error!("{}", e);
+            return Err(StatusCode::INTERNAL_SERVER_ERROR);
+        }
+    };
+
+    let listing = if let ApiData::Single(RedditData::Listing(l)) = res {
+        l
+    } else {
+        tracing::error!("Invalid schema 1");
+        return Err(StatusCode::INTERNAL_SERVER_ERROR);
+    };
+
+    let all_t3 = listing
+        .children
+        .iter()
+        .all(|child| matches!(child, RedditData::T3(_)));
+
+    if !all_t3 {
+        tracing::error!("Wrong schema 2");
+        //return Err(StatusCode::INTERNAL_SERVER_ERROR);
+    }
+
+    let posts: Vec<T3Data> = listing
+        .children
+        .into_iter()
+        .filter_map(|child| match child {
+            RedditData::T3(t3_data) => Some(t3_data),
+            _ => None,
+        })
+        .collect();
+
+    Ok(SubredditQuery {
+        posts,
+        after: listing.after,
+        before: listing.before,
+    })
+}
+
+
+// ?after=t3_16kksoi
+pub async fn search(
+    client: &Client,
+    subreddit: &str,
+    query: &str,
+    sorting: Option<SearchSortingMode>,
+    time_ordering: Option<SearchTimeOrdering>,
+    after: Option<&str>,
+    include_over_18: bool,
+    only_current_subreddit: bool,
+    user_agent: &str,
+) -> Result<SubredditQuery, StatusCode> {
+    let sort = sorting.unwrap_or_default();
+    let order = time_ordering.unwrap_or_default();
+
+    let mut base = utils::get_reddit_domain();
+    base.add_route("r");
+    base.add_route(subreddit);
+    base.add_route("search.json");
+
+    base.add_param("q", query);
+
+    match sort {
+        SearchSortingMode::Relevance => base.add_param("sort", "relevance"),
+        SearchSortingMode::New => base.add_param("sort", "new"),
+        SearchSortingMode::Comments => base.add_param("sort", "comments"),
+    };
+
+    match order {
+        SearchTimeOrdering::PastHour => base.add_param("t", "hour"),
+        SearchTimeOrdering::Past24Hours => base.add_param("t", "day"),
+        SearchTimeOrdering::PastWeek => base.add_param("t", "week"),
+        SearchTimeOrdering::PastMonth => base.add_param("t", "month"),
+        SearchTimeOrdering::PastYear => base.add_param("t", "year"),
+        SearchTimeOrdering::AllTime => base.add_param("t", "all"),
+    };
+
+    if only_current_subreddit {
+        base.add_param("restrict_sr", "on");
+    }
+
+    if include_over_18 {
+        base.add_param("include_over_18", "on");
+    }
 
     if let Some(s) = after {
         base.add_param("after", s);
