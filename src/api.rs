@@ -55,6 +55,17 @@ impl CommentsQuery {
 
         return PostType::Text;
     }
+
+    pub fn get_url(&self) -> Option<String> {
+        if let Some(u) = self.post.url.clone() {
+            if self.post.is_reddit_media_domain {
+                return Some(u.replace("https://i.redd.it", "/i"));
+            }
+            return Some(u)
+        }
+
+        return None;
+    }
 }
 
 #[derive(Debug, Clone, Copy)]

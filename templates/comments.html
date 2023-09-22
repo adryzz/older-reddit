@@ -9,12 +9,14 @@
         {% when crate::api::PostType::Text %}
             {{data.post.selftext.clone()|markdown}}
         {% when crate::api::PostType::Link %}
-            {% if let Some(u) = data.post.url %}
+            {% if let Some(u) = data.get_url() %}
             <a href="{{u}}">{{u}}</a>
             {% endif %}
         {% when crate::api::PostType::Image %}
-            {% if let Some(u) = data.post.url %}
-            <img src="{{u}}" class="image-post">
+            {% if let Some(u) = data.get_url() %}
+            <div class="image-container">
+                <img src="{{u}}" class="image-post">
+            </div>
             {% endif %}
         {% when crate::api::PostType::Gallery %}
         <p>Can't display galleries right now</p>
