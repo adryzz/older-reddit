@@ -168,7 +168,7 @@ pub struct T3Data {
 #[derive(Debug, Clone)]
 pub enum ReplyList {
     None,
-    Replies(ListingData)
+    Replies(ListingData),
 }
 
 impl<'de> Deserialize<'de> for ReplyList {
@@ -178,9 +178,11 @@ impl<'de> Deserialize<'de> for ReplyList {
     {
         let value: InnerData = match Deserialize::deserialize(deserializer) {
             Ok(v) => v,
-            Err(_) => return Ok(ReplyList::None)
+            Err(_) => return Ok(ReplyList::None),
         };
 
-        Ok(ReplyList::Replies(serde_json::from_value(value.data).map_err(|e| serde::de::Error::custom(e))?))
+        Ok(ReplyList::Replies(
+            serde_json::from_value(value.data).map_err(|e| serde::de::Error::custom(e))?,
+        ))
     }
 }

@@ -1,9 +1,16 @@
 use askama::Template;
-use axum::{extract::{Path, State, Query}, TypedHeader, headers::UserAgent};
+use axum::{
+    extract::{Path, Query, State},
+    headers::UserAgent,
+    TypedHeader,
+};
 use reqwest::{Client, StatusCode};
 use serde::Deserialize;
 
-use crate::{api::SubredditQuery, api_types::{SearchSortingMode, SearchTimeOrdering}};
+use crate::{
+    api::SubredditQuery,
+    api_types::{SearchSortingMode, SearchTimeOrdering},
+};
 
 #[derive(Template)]
 #[template(path = "search.html")]
@@ -22,7 +29,6 @@ pub async fn search_handler(
     TypedHeader(user_agent): TypedHeader<UserAgent>,
     State(client): State<Client>,
 ) -> Result<SearchTemplate, StatusCode> {
-
     let data = crate::api::search(
         &client,
         &subreddit,
@@ -32,7 +38,7 @@ pub async fn search_handler(
         params.after.as_deref(),
         params.include_over_18.unwrap_or_default(),
         params.only_current_subreddit.unwrap_or_default(),
-        user_agent.as_str()
+        user_agent.as_str(),
     )
     .await?;
 

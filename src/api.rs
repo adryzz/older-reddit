@@ -3,7 +3,9 @@ use tracing_subscriber::util;
 
 use crate::{
     api_result_types::{ApiData, RedditData, T1Data, T3Data},
-    api_types::{CommentSortingMode, SortingMode, TopSortingTime, SearchSortingMode, SearchTimeOrdering},
+    api_types::{
+        CommentSortingMode, SearchSortingMode, SearchTimeOrdering, SortingMode, TopSortingTime,
+    },
 };
 
 use crate::utils;
@@ -41,7 +43,7 @@ impl CommentsQuery {
             if self.post.is_reddit_media_domain {
                 return Some(u.replace("https://i.redd.it", "/i"));
             }
-            return Some(u)
+            return Some(u);
         }
 
         return None;
@@ -182,25 +184,21 @@ pub struct SubredditQuery {
 impl T3Data {
     pub fn get_author_flair(&self) -> Option<(&str, &str)> {
         match &self.author_flair_text {
-            Some(t) => {
-                match &self.author_flair_background_color {
-                    Some(c) => Some((t, c)),
-                    None => Some((t, "#000000"))
-                }
+            Some(t) => match &self.author_flair_background_color {
+                Some(c) => Some((t, c)),
+                None => Some((t, "#000000")),
             },
-            None => None
+            None => None,
         }
     }
 
     pub fn get_link_flair(&self) -> Option<(&str, &str)> {
         match &self.link_flair_text {
-            Some(t) => {
-                match &self.link_flair_background_color {
-                    Some(c) => Some((t, c)),
-                    None => Some((t, "#000000"))
-                }
+            Some(t) => match &self.link_flair_background_color {
+                Some(c) => Some((t, c)),
+                None => Some((t, "#000000")),
             },
-            None => None
+            None => None,
         }
     }
 }
@@ -208,13 +206,11 @@ impl T3Data {
 impl T1Data {
     pub fn get_author_flair(&self) -> Option<(&str, &str)> {
         match &self.author_flair_text {
-            Some(t) => {
-                match &self.author_flair_background_color {
-                    Some(c) => Some((t, c)),
-                    None => Some((t, "#000000"))
-                }
+            Some(t) => match &self.author_flair_background_color {
+                Some(c) => Some((t, c)),
+                None => Some((t, "#000000")),
             },
-            None => None
+            None => None,
         }
     }
 }
@@ -312,7 +308,6 @@ pub async fn subreddit(
         before: listing.before,
     })
 }
-
 
 // ?after=t3_16kksoi
 pub async fn search(

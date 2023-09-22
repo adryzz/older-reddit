@@ -8,7 +8,12 @@ use axum::{
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 
-use crate::{api::SubredditQuery, api_result_types::T3Data, api_types::{SortingMode, TopSortingTime}, utils};
+use crate::{
+    api::SubredditQuery,
+    api_result_types::T3Data,
+    api_types::{SortingMode, TopSortingTime},
+    utils,
+};
 
 #[derive(Template)]
 #[template(path = "subreddit.html")]

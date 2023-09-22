@@ -9,7 +9,7 @@ use reqwest::Client;
 
 use crate::{
     api::CommentsQuery,
-    api_result_types::{T1Data, T3Data, ReplyList, RedditData},
+    api_result_types::{RedditData, ReplyList, T1Data, T3Data},
     api_types::CommentSortingMode,
 };
 

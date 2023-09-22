@@ -55,7 +55,7 @@ pub enum SearchSortingMode {
     #[serde(rename = "new")]
     New,
     #[serde(rename = "comments")]
-    Comments
+    Comments,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Default, Deserialize)]

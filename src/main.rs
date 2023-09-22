@@ -3,9 +3,9 @@ mod api_result_types;
 mod api_types;
 mod comments;
 mod image_proxy;
+mod search;
 mod subreddit;
 mod utils;
-mod search;
 
 use axum::{response::Redirect, routing::get, Router};
 
