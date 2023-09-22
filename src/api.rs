@@ -29,7 +29,7 @@ impl CommentsQuery {
             return PostType::Image;
         }
 
-        if self.post.url.is_some() {
+        if self.post.url.is_some() && self.post.selftext.len() == 0 {
             return PostType::Link;
         }
 
