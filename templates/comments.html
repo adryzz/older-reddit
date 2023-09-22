@@ -37,7 +37,22 @@
     <div class="comment">
         <small>{{comment.score}} - <a href="/u/{{comment.author}}">{{comment.author}}</a> - [time]</small>
         {{comment.body.clone()|markdown}}
+        {% call render_replies(comment.replies) %}
     </div>
     {% endfor %}
 </div>
 {% endblock %}
+
+{% macro render_replies(listing) %}
+{% if let ReplyList::Replies(list) = listing %}
+{% for child in list.children %}
+{% if let RedditData::T1(comment) = child %}
+<div class="comment">
+    <small>{{comment.score}} - <a href="/u/{{comment.author}}">{{comment.author}}</a>{% call utils::render_flair(comment.get_author_flair()) %} - [time]</small>
+    {{comment.body.clone()|markdown}}
+    
+</div>
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endmacro %}

@@ -205,6 +205,20 @@ impl T3Data {
     }
 }
 
+impl T1Data {
+    pub fn get_author_flair(&self) -> Option<(&str, &str)> {
+        match &self.author_flair_text {
+            Some(t) => {
+                match &self.author_flair_background_color {
+                    Some(c) => Some((t, c)),
+                    None => Some((t, "#000000"))
+                }
+            },
+            None => None
+        }
+    }
+}
+
 // ?after=t3_16kksoi
 pub async fn subreddit(
     client: &Client,

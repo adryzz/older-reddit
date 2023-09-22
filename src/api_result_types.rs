@@ -126,7 +126,9 @@ pub struct T1Data {
     pub locked: bool,
     pub stickied: bool,
     //pub created_utc: u64,
-    //pub replies: Option<ListingData>
+    pub replies: ReplyList,
+    pub author_flair_text: Option<String>,
+    pub author_flair_background_color: Option<String>,
 }
 
 /// Post listing, post
@@ -161,4 +163,24 @@ pub struct T3Data {
     // gallery_data
     // media_metadata
     // poll_data
+}
+
+#[derive(Debug, Clone)]
+pub enum ReplyList {
+    None,
+    Replies(ListingData)
+}
+
+impl<'de> Deserialize<'de> for ReplyList {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let value: InnerData = match Deserialize::deserialize(deserializer) {
+            Ok(v) => v,
+            Err(_) => return Ok(ReplyList::None)
+        };
+
+        Ok(ReplyList::Replies(serde_json::from_value(value.data).map_err(|e| serde::de::Error::custom(e))?))
+    }
 }
