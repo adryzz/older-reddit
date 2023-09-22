@@ -2,6 +2,7 @@ mod api;
 mod api_result_types;
 mod api_types;
 mod comments;
+mod image_proxy;
 mod subreddit;
 mod utils;
 
@@ -22,7 +23,8 @@ async fn run() -> anyhow::Result<()> {
     let app = Router::new()
         .route("/", get(|| async { Redirect::permanent("/r/all") }))
         .route("/r/:subreddit", get(subreddit::subreddit))
-        .route("/r/:subreddit/comments/:id", get(comments::comments));
+        .route("/r/:subreddit/comments/:file", get(comments::comments))
+        .route("/i/:id", get(image_proxy::reddit_image_proxy));
 
     let listener = std::net::TcpListener::bind("0.0.0.0:3000")?;
     tracing::info!("Listening on {}...", listener.local_addr()?);
