@@ -24,6 +24,12 @@ impl<'de> Deserialize<'de> for EditTimestamp {
     }
 }
 
+#[derive(Debug, Clone, Deserialize)]
+pub struct Flair {
+    text: String,
+    background_color: String,
+}
+
 #[derive(Debug, Clone)]
 pub enum ApiData {
     Single(RedditData),

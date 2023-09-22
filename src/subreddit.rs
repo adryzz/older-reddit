@@ -1,10 +1,11 @@
 use askama::Template;
 use axum::{
-    extract::{Path, Query},
+    extract::{Path, Query, State},
     headers::UserAgent,
     http::StatusCode,
     TypedHeader,
 };
+use reqwest::Client;
 use serde::{Deserialize, Serialize};
 
 use crate::{api::SubredditQuery, api_result_types::T3Data, api_types::SortingMode, utils};
@@ -21,17 +22,20 @@ pub async fn subreddit(
     sorting: Option<Query<SortingMode>>,
     after: Option<Query<String>>,
     TypedHeader(user_agent): TypedHeader<UserAgent>,
+    State(client): State<Client>,
 ) -> Result<SubredditTemplate, StatusCode> {
-    let mut client = reqwest::ClientBuilder::new()
-        .user_agent(user_agent.as_str())
-        .build()
-        .unwrap();
-
     let sort = sorting.map(|v| v.0);
 
     let after = after.map(|v| v.0);
 
-    let data = crate::api::subreddit(&mut client, &subreddit, sort, after.as_deref()).await?;
+    let data = crate::api::subreddit(
+        &client,
+        &subreddit,
+        sort,
+        after.as_deref(),
+        user_agent.as_str(),
+    )
+    .await?;
 
     Ok(SubredditTemplate { subreddit, data })
 }

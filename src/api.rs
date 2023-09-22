@@ -1,4 +1,4 @@
-use reqwest::{Client, StatusCode};
+use reqwest::{header::USER_AGENT, Client, StatusCode};
 use tracing_subscriber::util;
 
 use crate::{
@@ -68,10 +68,11 @@ pub enum PostType {
 }
 
 pub async fn comments(
-    client: &mut Client,
+    client: &Client,
     subreddit: &str,
     post_id: &str,
     sorting: Option<CommentSortingMode>,
+    user_agent: &str,
 ) -> Result<CommentsQuery, StatusCode> {
     let sort = sorting.unwrap_or_default();
 
@@ -80,7 +81,6 @@ pub async fn comments(
     base.add_route(subreddit);
     base.add_route("comments");
     base.add_route(&format!("{}.json", post_id));
-
 
     match sort {
         CommentSortingMode::Suggested => &mut base,
@@ -94,7 +94,7 @@ pub async fn comments(
 
     let url = base.build();
 
-    let response = match client.get(&url).send().await {
+    let response = match client.get(&url).header(USER_AGENT, user_agent).send().await {
         Ok(r) => {
             if r.status() == StatusCode::OK {
                 r
@@ -190,10 +190,11 @@ pub struct SubredditQuery {
 
 // ?after=t3_16kksoi
 pub async fn subreddit(
-    client: &mut Client,
+    client: &Client,
     subreddit: &str,
     sorting: Option<SortingMode>,
     after: Option<&str>,
+    user_agent: &str,
 ) -> Result<SubredditQuery, StatusCode> {
     let sort = sorting.unwrap_or_default();
 
@@ -226,7 +227,7 @@ pub async fn subreddit(
 
     let url = base.build();
 
-    let response = match client.get(url).send().await {
+    let response = match client.get(url).header(USER_AGENT, user_agent).send().await {
         Ok(r) => {
             if r.status() == StatusCode::OK {
                 r

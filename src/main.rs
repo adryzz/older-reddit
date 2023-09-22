@@ -24,7 +24,8 @@ async fn run() -> anyhow::Result<()> {
         .route("/", get(|| async { Redirect::permanent("/r/all") }))
         .route("/r/:subreddit", get(subreddit::subreddit))
         .route("/r/:subreddit/comments/:file", get(comments::comments))
-        .route("/i/:id", get(image_proxy::reddit_image_proxy));
+        .route("/i/:id", get(image_proxy::reddit_image_proxy))
+        .with_state(reqwest::Client::new());
 
     let listener = std::net::TcpListener::bind("0.0.0.0:3000")?;
     tracing::info!("Listening on {}...", listener.local_addr()?);
