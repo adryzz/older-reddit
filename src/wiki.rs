@@ -21,13 +21,7 @@ pub async fn wiki_page(
     TypedHeader(user_agent): TypedHeader<UserAgent>,
     State(client): State<Client>,
 ) -> Result<WikiTemplate, StatusCode> {
-    let data = crate::api::wiki(
-        &client,
-        &subreddit,
-        None,
-        user_agent.as_str(),
-    )
-    .await?;
+    let data = crate::api::wiki(&client, &subreddit, None, user_agent.as_str()).await?;
 
     Ok(WikiTemplate { subreddit, data })
 }

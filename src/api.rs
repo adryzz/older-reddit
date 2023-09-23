@@ -452,7 +452,6 @@ pub async fn wiki(
     path: Option<&str>,
     user_agent: &str,
 ) -> Result<WikiPageData, StatusCode> {
-
     let mut base = utils::get_reddit_domain();
     base.add_route("r");
     base.add_route(subreddit);

@@ -119,7 +119,7 @@ impl<'de> Deserialize<'de> for RedditData {
 #[derive(Debug, Clone, Deserialize)]
 pub struct WikiPageData {
     pub content_md: String,
-    pub revision_date: u64
+    pub revision_date: u64,
 }
 
 /// Comment
