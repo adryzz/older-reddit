@@ -1,19 +1,13 @@
 use askama::Template;
 use axum::{
-    extract::{Path, Query, State},
+    extract::{Path, State},
     headers::UserAgent,
     http::StatusCode,
     TypedHeader,
 };
 use reqwest::Client;
-use serde::{Deserialize, Serialize};
 
-use crate::{
-    api::SubredditQuery,
-    api_result_types::{T3Data, WikiPageData},
-    api_types::{SortingMode, TopSortingTime},
-    utils,
-};
+use crate::api_result_types::WikiPageData;
 
 #[derive(Template)]
 #[template(path = "wiki.html")]
