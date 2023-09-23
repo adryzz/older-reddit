@@ -3,12 +3,18 @@ use serde::Deserialize;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Default, Deserialize)]
 pub enum SortingMode {
     #[default]
+    #[serde(rename = "suggested")]
     Default,
+    #[serde(rename = "hot")]
     Hot,
+    #[serde(rename = "new")]
     New,
+    #[serde(rename = "rising")]
     Rising,
+    #[serde(rename = "controversial")]
     Controversial,
-    Top(TopSortingTime),
+    #[serde(rename = "top")]
+    Top,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Default, Deserialize)]

@@ -220,6 +220,7 @@ pub async fn subreddit(
     client: &Client,
     subreddit: &str,
     sorting: Option<SortingMode>,
+    top_time: Option<TopSortingTime>,
     after: Option<&str>,
     user_agent: &str,
 ) -> Result<SubredditQuery, StatusCode> {
@@ -235,7 +236,8 @@ pub async fn subreddit(
         SortingMode::New => base.add_route("new.json"),
         SortingMode::Rising => base.add_route("rising.json"),
         SortingMode::Controversial => base.add_route("controversial.json"),
-        SortingMode::Top(t) => {
+        SortingMode::Top => {
+            let t = top_time.unwrap_or_default();
             base.add_route("top.json");
             match t {
                 TopSortingTime::PastHour => base.add_param("t", "hour"),

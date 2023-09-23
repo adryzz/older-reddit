@@ -31,7 +31,8 @@ pub async fn subreddit(
     let data = crate::api::subreddit(
         &client,
         &subreddit,
-        None,
+        params.sort,
+        params.t,
         params.after.as_deref(),
         user_agent.as_str(),
     )
@@ -42,6 +43,7 @@ pub async fn subreddit(
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct SubredditParams {
+    sort: Option<SortingMode>,
     t: Option<TopSortingTime>,
     after: Option<String>,
 }
