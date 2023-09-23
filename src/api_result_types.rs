@@ -105,6 +105,11 @@ impl<'de> Deserialize<'de> for RedditData {
                     .map_err(|e| serde::de::Error::custom(e.to_string()))?;
                 Ok(RedditData::T3(t3_data))
             }
+            "wikipage" => {
+                let wiki_data: WikiPageData = serde_json::from_value(inner_data.data)
+                    .map_err(|e| serde::de::Error::custom(e.to_string()))?;
+                Ok(RedditData::WikiPage(wiki_data))
+            }
             // Handle other variants as needed
             _ => Ok(RedditData::Unknown(inner_data.kind)),
         }
@@ -112,7 +117,10 @@ impl<'de> Deserialize<'de> for RedditData {
 }
 
 #[derive(Debug, Clone, Deserialize)]
-pub struct WikiPageData {}
+pub struct WikiPageData {
+    pub content_md: String,
+    pub revision_date: u64
+}
 
 /// Comment
 #[derive(Debug, Clone, Deserialize)]

@@ -1,7 +1,7 @@
-{% if let Some(b_id) = data.before %}
+{% if let Some(b_id) = data.before_url() %}
 <a href="{}">previous</a>
 {% endif %}
 
-{% if let Some(a_id) = data.after %}
+{% if let Some(a_id) = data.after_url() %}
 <a href="{}">next</a>
 {% endif %}

@@ -1,8 +1,7 @@
 use reqwest::{header::USER_AGENT, Client, StatusCode};
-use tracing_subscriber::util;
 
 use crate::{
-    api_result_types::{ApiData, RedditData, T1Data, T3Data},
+    api_result_types::{ApiData, RedditData, T1Data, T3Data, WikiPageData},
     api_types::{
         CommentSortingMode, SearchSortingMode, SearchTimeOrdering, SortingMode, TopSortingTime,
     },
@@ -15,6 +14,16 @@ pub struct CommentsQuery {
     pub comments: Vec<T1Data>,
     pub after: Option<String>,
     pub before: Option<String>,
+}
+
+impl CommentsQuery {
+    pub fn before_url(&self) -> Option<&str> {
+        self.after.as_deref()
+    }
+
+    pub fn after_url(&self) -> Option<&str> {
+        self.before.as_deref()
+    }
 }
 
 impl CommentsQuery {
@@ -179,6 +188,16 @@ pub struct SubredditQuery {
     pub posts: Vec<T3Data>,
     pub after: Option<String>,
     pub before: Option<String>,
+}
+
+impl SubredditQuery {
+    pub fn before_url(&self) -> Option<&str> {
+        self.after.as_deref()
+    }
+
+    pub fn after_url(&self) -> Option<&str> {
+        self.before.as_deref()
+    }
 }
 
 impl T3Data {
@@ -415,4 +434,66 @@ pub async fn search(
         after: listing.after,
         before: listing.before,
     })
+}
+
+impl WikiPageData {
+    pub fn before_url(&self) -> Option<&str> {
+        None
+    }
+
+    pub fn after_url(&self) -> Option<&str> {
+        None
+    }
+}
+
+pub async fn wiki(
+    client: &Client,
+    subreddit: &str,
+    path: Option<&str>,
+    user_agent: &str,
+) -> Result<WikiPageData, StatusCode> {
+
+    let mut base = utils::get_reddit_domain();
+    base.add_route("r");
+    base.add_route(subreddit);
+    base.add_route("wiki");
+
+    if let Some(p) = path {
+        base.add_route(p);
+    } else {
+        base.add_route("index");
+    }
+
+    base.add_route(".json");
+
+    let url = base.build();
+
+    let response = match client.get(url).header(USER_AGENT, user_agent).send().await {
+        Ok(r) => {
+            if r.status() == StatusCode::OK {
+                r
+            } else {
+                return Err(r.status());
+            }
+        }
+        Err(e) => {
+            tracing::error!("{}", e);
+            return Err(StatusCode::INTERNAL_SERVER_ERROR);
+        }
+    };
+
+    let res = match response.json::<ApiData>().await {
+        Ok(j) => j,
+        Err(e) => {
+            tracing::error!("{}", e);
+            return Err(StatusCode::INTERNAL_SERVER_ERROR);
+        }
+    };
+
+    if let ApiData::Single(RedditData::WikiPage(w)) = res {
+        Ok(w)
+    } else {
+        tracing::error!("Invalid schema");
+        Err(StatusCode::INTERNAL_SERVER_ERROR)
+    }
 }

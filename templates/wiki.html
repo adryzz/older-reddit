@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{%- import "utils.html" as utils -%}
+
+{% block title %}Wiki - r/{{subreddit}} - Older reddit{% endblock %}
+
+{% block content %}
+<div class="wiki-container">
+    <div class="margin-big">
+        {{data.content_md.clone()|markdown}}
+    </div>
+</div>
+{% endblock %}
