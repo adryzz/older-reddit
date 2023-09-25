@@ -6,7 +6,7 @@
 {% block content %}
 
 {% for post in data.posts %}
-    <div class="subreddit-post">
+    <div class="{% call utils::get_post_class(post) %}">
         <small>{{post.score}}</small>
         <a href="/r/{{post.subreddit}}/comments/{{post.id}}">{{post.title}}</a> {% call utils::render_post_meta(post)%}
         {% call utils::render_flair(post.get_link_flair()) %}

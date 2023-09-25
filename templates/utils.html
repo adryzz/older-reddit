@@ -38,6 +38,19 @@ comment-stickied
 comment
 {% endmacro %}
 
+{% macro get_post_class(t3) %}
+
+{% if t3.locked %}
+subreddit-post-locked
+{% endif %}
+
+{% if t3.stickied %}
+subreddit-post-stickied
+{% endif %}
+
+subreddit-post
+{% endmacro %}
+
 {% macro render_post_meta(t3) %}
 {% if t3.over_18 %}
 <div class="nsfw">NSFW</div>

@@ -4,7 +4,7 @@
 {% block title %}{{data.post.title}} - r/{{subreddit}} - Older reddit{% endblock %}
 
 {% block content %}
-<div class="subreddit-post">
+<div class="{% call utils::get_post_class(data.post) %}">
     <h2 class="post-title">{{data.post.title}}</h2> {% call utils::render_post_meta(data.post)%}
     <div class="center">{% call utils::render_flair(data.post.get_link_flair()) %}</div>
 
