@@ -39,5 +39,27 @@ comment
 {% endmacro %}
 
 {% macro render_post_meta(t3) %}
+{% if t3.over_18 %}
+<div class="nsfw">NSFW</div>
+{% endif %}
 
+{% if t3.spoiler %}
+<div class="spoiler">SPOILER</div>
+{% endif %}
+
+{% if t3.locked %}
+ - locked
+{% endif %}
+
+{% if t3.stickied %}
+ - sticky
+{% endif %}
+
+{% if t3.pinned %}
+ - pinned
+{% endif %}
+
+{% if t3.archived %}
+ - archived
+{% endif %}
 {% endmacro %}
