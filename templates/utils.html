@@ -9,3 +9,35 @@ to <a href="/r/{{post.subreddit}}">r/{{sub}}</a>
 <div class="flair" style="background-color: {{f.1}};">{{f.0}}</div>
 {% endif %}
 {% endmacro %}
+
+{% macro render_comment_meta(t1) %}
+{% if t1.is_submitter %}
+<div class="op">OP</div>
+{% endif %}
+
+{% if t1.locked %}
+ - locked
+{% endif %}
+
+{% if t1.stickied %}
+ - sticky
+{% endif %}
+
+{% endmacro %}
+
+{% macro get_comment_class(t1) %}
+
+{% if t1.locked %}
+comment-locked
+{% endif %}
+
+{% if t1.stickied %}
+comment-stickied
+{% endif %}
+
+comment
+{% endmacro %}
+
+{% macro render_post_meta(t3) %}
+
+{% endmacro %}

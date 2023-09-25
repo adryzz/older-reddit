@@ -34,8 +34,8 @@
 </div>
 <div class="comments-container">
     {% for comment in data.comments %} 
-    <div class="comment">
-        <small>{{comment.score}} - <a href="/u/{{comment.author}}">{{comment.author}}</a> - [time]</small>
+    <div class="{% call utils::get_comment_class(comment) %}">
+        <small>{{comment.score}} - <a href="/u/{{comment.author}}">{{comment.author}}</a> - [time] {% call utils::render_comment_meta(comment) %}</small>
         {{comment.body.clone()|markdown}}
         {% call render_replies(comment.replies) %}
     </div>
@@ -47,8 +47,8 @@
     {% if let ReplyList::Replies(list) = listing %}
         {% for child in list.children %}
             {% if let RedditData::T1(comment) = child %}
-                <div class="comment">
-                    <small>{{comment.score}} - <a href="/u/{{comment.author}}">{{comment.author}}</a>{% call utils::render_flair(comment.get_author_flair()) %} - [time]</small>
+                <div class="{% call utils::get_comment_class(comment) %}">
+                    <small>{{comment.score}} - <a href="/u/{{comment.author}}">{{comment.author}}</a>{% call utils::render_flair(comment.get_author_flair()) %} - [time] {% call utils::render_comment_meta(comment) %}</small>
                     {{comment.body.clone()|markdown}}
                     {% call render_replies1(comment.replies) %}
                 </div>
@@ -61,8 +61,8 @@
     {% if let ReplyList::Replies(list) = listing %}
         {% for child in list.children %}
             {% if let RedditData::T1(comment) = child %}
-                <div class="comment">
-                    <small>{{comment.score}} - <a href="/u/{{comment.author}}">{{comment.author}}</a>{% call utils::render_flair(comment.get_author_flair()) %} - [time]</small>
+                <div class="{% call utils::get_comment_class(comment) %}">
+                    <small>{{comment.score}} - <a href="/u/{{comment.author}}">{{comment.author}}</a>{% call utils::render_flair(comment.get_author_flair()) %} - [time] {% call utils::render_comment_meta(comment) %}</small>
                     {{comment.body.clone()|markdown}}
                     {% call render_replies2(comment.replies) %}
                 </div>
@@ -75,8 +75,8 @@
     {% if let ReplyList::Replies(list) = listing %}
         {% for child in list.children %}
             {% if let RedditData::T1(comment) = child %}
-                <div class="comment">
-                    <small>{{comment.score}} - <a href="/u/{{comment.author}}">{{comment.author}}</a>{% call utils::render_flair(comment.get_author_flair()) %} - [time]</small>
+                <div class="{% call utils::get_comment_class(comment) %}">
+                    <small>{{comment.score}} - <a href="/u/{{comment.author}}">{{comment.author}}</a>{% call utils::render_flair(comment.get_author_flair()) %} - [time] {% call utils::render_comment_meta(comment) %}</small>
                     {{comment.body.clone()|markdown}}
                     {% call render_replies3(comment.replies) %}
                 </div>
@@ -89,8 +89,8 @@
     {% if let ReplyList::Replies(list) = listing %}
         {% for child in list.children %}
             {% if let RedditData::T1(comment) = child %}
-                <div class="comment">
-                    <small>{{comment.score}} - <a href="/u/{{comment.author}}">{{comment.author}}</a>{% call utils::render_flair(comment.get_author_flair()) %} - [time]</small>
+                <div class="{% call utils::get_comment_class(comment) %}">
+                    <small>{{comment.score}} - <a href="/u/{{comment.author}}">{{comment.author}}</a>{% call utils::render_flair(comment.get_author_flair()) %} - [time] {% call utils::render_comment_meta(comment) %}</small>
                     {{comment.body.clone()|markdown}}
                     {% call render_replies4(comment.replies) %}
                 </div>
@@ -103,8 +103,8 @@
     {% if let ReplyList::Replies(list) = listing %}
         {% for child in list.children %}
             {% if let RedditData::T1(comment) = child %}
-                <div class="comment">
-                    <small>{{comment.score}} - <a href="/u/{{comment.author}}">{{comment.author}}</a>{% call utils::render_flair(comment.get_author_flair()) %} - [time]</small>
+                <div class="{% call utils::get_comment_class(comment) %}">
+                    <small>{{comment.score}} - <a href="/u/{{comment.author}}">{{comment.author}}</a>{% call utils::render_flair(comment.get_author_flair()) %} - [time] {% call utils::render_comment_meta(comment) %}</small>
                     {{comment.body.clone()|markdown}}
                 </div>
             {% endif %}

@@ -137,6 +137,7 @@ pub struct T1Data {
     pub replies: ReplyList,
     pub author_flair_text: Option<String>,
     pub author_flair_background_color: Option<String>,
+    pub is_submitter: bool,
 }
 
 /// Post listing, post
