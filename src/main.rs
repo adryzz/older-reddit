@@ -7,6 +7,7 @@ mod search;
 mod subreddit;
 mod utils;
 mod wiki;
+mod user;
 
 use axum::{response::Redirect, routing::get, Router};
 
@@ -28,6 +29,7 @@ async fn run() -> anyhow::Result<()> {
         .route("/r/:subreddit/comments/:file", get(comments::comments))
         .route("/r/:subreddit/search", get(search::search_handler))
         .route("/r/:subreddit/wiki", get(wiki::wiki_page))
+        .route("/u/:username", get(user::user))
         .route("/i/:id", get(image_proxy::reddit_image_proxy))
         .with_state(reqwest::Client::new());
 

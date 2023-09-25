@@ -80,3 +80,27 @@ pub enum SearchTimeOrdering {
     #[serde(rename = "all")]
     AllTime,
 }
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Default, Deserialize)]
+pub enum UserSortingMode {
+    #[serde(rename = "hot")]
+    Hot,
+    #[default]
+    #[serde(rename = "new")]
+    New,
+    #[serde(rename = "controversial")]
+    Controversial,
+    #[serde(rename = "top")]
+    Top,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Default, Deserialize)]
+pub enum UserFilterMode {
+    #[default]
+    #[serde(rename = "overview")]
+    Overview,
+    #[serde(rename = "comments")]
+    Comments,
+    #[serde(rename = "submitted")]
+    Submitted,
+}

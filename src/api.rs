@@ -1,9 +1,9 @@
 use reqwest::{header::USER_AGENT, Client, StatusCode};
 
 use crate::{
-    api_result_types::{ApiData, RedditData, T1Data, T3Data, WikiPageData},
+    api_result_types::{ApiData, RedditData, T1Data, T3Data, WikiPageData, ListingData},
     api_types::{
-        CommentSortingMode, SearchSortingMode, SearchTimeOrdering, SortingMode, TopSortingTime,
+        CommentSortingMode, SearchSortingMode, SearchTimeOrdering, SortingMode, TopSortingTime, UserFilterMode, UserSortingMode,
     },
 };
 
@@ -490,6 +490,82 @@ pub async fn wiki(
     };
 
     if let ApiData::Single(RedditData::WikiPage(w)) = res {
+        Ok(w)
+    } else {
+        tracing::error!("Invalid schema");
+        Err(StatusCode::INTERNAL_SERVER_ERROR)
+    }
+}
+
+pub async fn user(
+    client: &Client,
+    username: &str,
+    sorting: Option<UserSortingMode>,
+    t: Option<SearchTimeOrdering>,
+    filtering: Option<UserFilterMode>,
+    after: Option<&str>,
+    user_agent: &str,
+) -> Result<ListingData, StatusCode> {
+    let sort = sorting.unwrap_or_default();
+    let filter = filtering.unwrap_or_default();
+
+    let mut base = utils::get_reddit_domain();
+    base.add_route("user");
+    base.add_route(username);
+
+    match filter {
+        UserFilterMode::Overview => base.add_route(".json"),
+        UserFilterMode::Comments => base.add_route("comments.json"),
+        UserFilterMode::Submitted => base.add_route("submitted.json"),
+    };
+
+    match sort {
+        UserSortingMode::Hot => base.add_param("sort", "hot"),
+        UserSortingMode::New => base.add_param("sort", "new"),
+        UserSortingMode::Controversial => base.add_param("sort", "controversial"),
+        UserSortingMode::Top => {
+            base.add_param("sort", "top");
+            let t = t.unwrap_or_default();
+            match t {
+                SearchTimeOrdering::PastHour => base.add_param("t", "hour"),
+                SearchTimeOrdering::Past24Hours => base.add_param("t", "day"),
+                SearchTimeOrdering::PastWeek => base.add_param("t", "week"),
+                SearchTimeOrdering::PastMonth => base.add_param("t", "month"),
+                SearchTimeOrdering::PastYear => base.add_param("t", "year"),
+                SearchTimeOrdering::AllTime => base.add_param("t", "all"),
+            }
+        },
+    };
+
+    if let Some(s) = after {
+        base.add_param("after", s);
+    }
+
+    let url = base.build();
+
+    let response = match client.get(url).header(USER_AGENT, user_agent).send().await {
+        Ok(r) => {
+            if r.status() == StatusCode::OK {
+                r
+            } else {
+                return Err(r.status());
+            }
+        }
+        Err(e) => {
+            tracing::error!("{}", e);
+            return Err(StatusCode::INTERNAL_SERVER_ERROR);
+        }
+    };
+
+    let res = match response.json::<ApiData>().await {
+        Ok(j) => j,
+        Err(e) => {
+            tracing::error!("{}", e);
+            return Err(StatusCode::INTERNAL_SERVER_ERROR);
+        }
+    };
+
+    if let ApiData::Single(RedditData::Listing(w)) = res {
         Ok(w)
     } else {
         tracing::error!("Invalid schema");
