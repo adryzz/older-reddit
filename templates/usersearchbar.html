@@ -1,0 +1,15 @@
+<div class="nav-links">
+    <span><a href="/u/{{username}}">overview</a></span>
+    <span>|</span>
+    <span><a href="/u/{{username}}?filter=comments" class="active">comments</a></span>
+    <span>|</span>
+    <span><a href="/u/{{username}}?filter=submitted">submitted</a></span>
+</div>
+<div class="padding-right">
+</div>
+<form action="/search" method="GET" class="search">
+    <label class="checkbox-label" for="include_over_18">NSFW</label>
+    <input type="checkbox" id="include_over_18" name="include_over_18" value="true">
+    <input type="text" id="search" name="q" placeholder="Search...">
+    <input type="submit" value="Search">
+</form>
