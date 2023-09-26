@@ -2,7 +2,7 @@ use askama::Template;
 use axum::{
     extract::{Path, Query, State},
     headers::UserAgent,
-    http::StatusCode,
+    http::{StatusCode, Uri},
     TypedHeader,
 };
 use reqwest::Client;
@@ -16,6 +16,7 @@ use crate::{api_types::{UserSortingMode, UserFilterMode, SearchTimeOrdering}, ap
 pub struct UserTemplate {
     username: String,
     data: ListingData,
+    uri: Uri
 }
 
 pub async fn user(
@@ -23,6 +24,7 @@ pub async fn user(
     Query(params): Query<UserParams>,
     TypedHeader(user_agent): TypedHeader<UserAgent>,
     State(client): State<Client>,
+    uri: Uri
 ) -> Result<UserTemplate, StatusCode> {
     let data = crate::api::user(
         &client,
@@ -35,7 +37,7 @@ pub async fn user(
     )
     .await?;
 
-    Ok(UserTemplate { username, data })
+    Ok(UserTemplate { username, data, uri })
 }
 
 #[derive(Debug, Clone, Deserialize)]

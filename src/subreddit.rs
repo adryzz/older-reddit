@@ -2,7 +2,7 @@ use askama::Template;
 use axum::{
     extract::{Path, Query, State},
     headers::UserAgent,
-    http::StatusCode,
+    http::{StatusCode, Uri},
     TypedHeader,
 };
 use reqwest::Client;
@@ -18,6 +18,7 @@ use crate::{
 pub struct SubredditTemplate {
     subreddit: String,
     data: SubredditQuery,
+    uri: Uri
 }
 
 pub async fn subreddit(
@@ -25,6 +26,7 @@ pub async fn subreddit(
     Query(params): Query<SubredditParams>,
     TypedHeader(user_agent): TypedHeader<UserAgent>,
     State(client): State<Client>,
+    uri: Uri
 ) -> Result<SubredditTemplate, StatusCode> {
     let data = crate::api::subreddit(
         &client,
@@ -36,7 +38,7 @@ pub async fn subreddit(
     )
     .await?;
 
-    Ok(SubredditTemplate { subreddit, data })
+    Ok(SubredditTemplate { subreddit, data, uri })
 }
 
 #[derive(Debug, Clone, Deserialize)]

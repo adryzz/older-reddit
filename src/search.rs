@@ -2,7 +2,7 @@ use askama::Template;
 use axum::{
     extract::{Path, Query, State},
     headers::UserAgent,
-    TypedHeader,
+    TypedHeader, http::Uri,
 };
 use reqwest::{Client, StatusCode};
 use serde::Deserialize;
@@ -17,6 +17,7 @@ use crate::{
 pub struct SearchTemplate {
     subreddit: String,
     data: SubredditQuery,
+    uri: Uri
 }
 
 //t=day
@@ -28,6 +29,7 @@ pub async fn search_handler(
     Query(params): Query<SearchParams>,
     TypedHeader(user_agent): TypedHeader<UserAgent>,
     State(client): State<Client>,
+    uri: Uri
 ) -> Result<SearchTemplate, StatusCode> {
     let data = crate::api::search(
         &client,
@@ -42,7 +44,7 @@ pub async fn search_handler(
     )
     .await?;
 
-    Ok(SearchTemplate { subreddit, data })
+    Ok(SearchTemplate { subreddit, data, uri })
 }
 
 #[derive(Debug, Clone, Deserialize)]

@@ -2,7 +2,7 @@ use askama::Template;
 use axum::{
     extract::{Path, Query, State},
     headers::UserAgent,
-    http::StatusCode,
+    http::{StatusCode, Uri},
     TypedHeader,
 };
 use reqwest::Client;
@@ -19,7 +19,8 @@ use crate::{
 pub struct CommentsTemplate {
     subreddit: String,
     data: CommentsQuery,
-    gallery_index: usize
+    gallery_index: usize,
+    uri: Uri
 }
 
 pub async fn comments(
@@ -27,11 +28,12 @@ pub async fn comments(
     Query(params): Query<CommentsParams>,
     TypedHeader(user_agent): TypedHeader<UserAgent>,
     State(client): State<Client>,
+    uri: Uri
 ) -> Result<CommentsTemplate, StatusCode> {
 
     let data = crate::api::comments(&client, &subreddit, &id, params.sorting, user_agent.as_str()).await?;
     dbg!(data.get_post_type());
-    Ok(CommentsTemplate { subreddit, data, gallery_index: params.gallery_index.unwrap_or_default() })
+    Ok(CommentsTemplate { subreddit, data, gallery_index: params.gallery_index.unwrap_or_default(), uri })
 }
 
 #[derive(Debug, Clone, Deserialize)]
