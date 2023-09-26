@@ -6,6 +6,7 @@ use axum::{
     TypedHeader,
 };
 use reqwest::Client;
+use serde::Deserialize;
 
 use crate::{
     api::CommentsQuery,
@@ -18,17 +19,23 @@ use crate::{
 pub struct CommentsTemplate {
     subreddit: String,
     data: CommentsQuery,
+    gallery_index: usize
 }
 
 pub async fn comments(
     Path((subreddit, id)): Path<(String, String)>,
-    sorting: Option<Query<CommentSortingMode>>,
+    Query(params): Query<CommentsParams>,
     TypedHeader(user_agent): TypedHeader<UserAgent>,
     State(client): State<Client>,
 ) -> Result<CommentsTemplate, StatusCode> {
-    let sort = sorting.map(|v| v.0);
 
-    let data = crate::api::comments(&client, &subreddit, &id, sort, user_agent.as_str()).await?;
+    let data = crate::api::comments(&client, &subreddit, &id, params.sorting, user_agent.as_str()).await?;
     dbg!(data.get_post_type());
-    Ok(CommentsTemplate { subreddit, data })
+    Ok(CommentsTemplate { subreddit, data, gallery_index: params.gallery_index.unwrap_or_default() })
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct CommentsParams {
+    gallery_index: Option<usize>,
+    sorting: Option<CommentSortingMode>
 }

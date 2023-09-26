@@ -24,8 +24,15 @@
                 <a href="{{u}}"><img src="{{u}}" class="image-post"></a>
             </div>
             {% endif %}
+            {{data.post.selftext.clone()|markdown}}
         {% when crate::api::PostType::Gallery %}
-        <p>Can't display galleries right now</p>
+        {% if let Some(gallery_data) = data.post.gallery_data %}
+        {% call render_gallery_buttons(gallery_data, gallery_index) %}
+        <div class="image-container">
+            <a href="/i/{{gallery_data.items[gallery_index].media_id}}"><img src="/i/{{gallery_data.items[gallery_index].media_id}}.jpg" class="image-post"></a>
+        </div>
+        {% endif %}
+        {{data.post.selftext.clone()|markdown}}
         {% when crate::api::PostType::Poll %}
         {% if let Some(poll_data) = data.post.poll_data %}
         <table>
@@ -127,4 +134,21 @@
             {% endif %}
         {% endfor %}
     {% endif %}
+{% endmacro %}
+
+{% macro render_gallery_buttons(gallery_data, gallery_index) %}
+<div class="gallery">
+    <div>
+        Image {{gallery_index+1}}/{{gallery_data.items.len()}}
+    </div>
+    <div>
+        {% for index in 0..gallery_data.items.len() %}
+        {% if loop.first %}
+        <a>{{index+1}}</a>
+        {% else %}
+         | <a>{{index+1}}</a>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
 {% endmacro %}

@@ -169,7 +169,7 @@ pub struct T3Data {
     pub link_flair_text: Option<String>,
     pub link_flair_background_color: Option<String>,
     pub url: Option<String>,
-    // gallery_data
+    pub gallery_data: Option<GalleryData>,
     // media_metadata
     pub poll_data: Option<PollData>
 }
@@ -207,4 +207,14 @@ pub struct PollData {
 pub struct PollOption {
     pub text: String,
     pub id: String
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct GalleryData {
+    pub items: Vec<GalleryItem>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct GalleryItem {
+    pub media_id: String,
 }
