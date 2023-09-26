@@ -146,9 +146,11 @@
   </head>
   <body>
     <div>
-      <h1 class="subreddit-name">r/{{subreddit}}</h1>
+      {% block bigh1 %}<h1 class="subreddit-name">r/{{subreddit}}</h1>{% endblock %}
       <div id="search" role="search" class="margin-bot-4px">
-      {% include "searchbar.html" %}
+        {% block nav %}
+        {% include "searchbar.html" %}
+        {% endblock %}
       </div>
     </div>
     <div id="content" role="main">

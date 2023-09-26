@@ -7,8 +7,9 @@ use axum::{
 };
 use reqwest::Client;
 use serde::Deserialize;
+use crate::api_result_types::RedditData;
 
-use crate::{api_types::{SortingMode, TopSortingTime, UserSortingMode, UserFilterMode, SearchSortingMode, SearchTimeOrdering}, api_result_types::ListingData};
+use crate::{api_types::{UserSortingMode, UserFilterMode, SearchTimeOrdering}, api_result_types::ListingData};
 
 #[derive(Template)]
 #[template(path = "user.html")]

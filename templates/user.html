@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{%- import "utils.html" as utils -%}
+
+{% block bigh1 %}<h1 class="subreddit-name">u/{{username}}</h1>{% endblock %}
+{% block title %}u/{{username}} - Older reddit{% endblock %}
+
+{% block nav %}{% endblock %}
+
+{% block content %}
+
+{% for child in data.children %}
+    {% if let RedditData::T3(post) = child %}
+    <div class="{% call utils::get_post_class(post) %}">
+        <small>{{post.score}}</small>
+        <a href="/r/{{post.subreddit}}/comments/{{post.id}}">{{post.title}}</a> {% call utils::render_post_meta(post)%}
+        {% call utils::render_flair(post.get_link_flair()) %}
+        <br>
+        <small>Submitted [time] by <a href="/u/{{post.author}}">{{post.author}}</a>{% call utils::render_flair(post.get_author_flair()) %} <a href="/r/{{post.subreddit}}">r/{{post.subreddit}}</a> - {{post.num_comments}} comments</small>
+    </div>
+    {% else if let RedditData::T1(comment) = child %}
+    <div class="{% call utils::get_comment_class(comment) %}">
+    User comments not rendered yet
+    </div>
+    {% endif %}
+{% endfor %}
+{% endblock %}
+

@@ -1,6 +1,6 @@
-{% macro subreddit_meta(sub) %}
-{% if subreddit != sub %}
-to <a href="/r/{{post.subreddit}}">r/{{sub}}</a>
+{% macro subreddit_meta(sub1, sub2) %}
+{% if sub1 != sub2 %}
+to <a href="/r/{{sub1}}">r/{{sub1}}</a>
 {% endif %}
 {% endmacro %}
 

@@ -497,6 +497,16 @@ pub async fn wiki(
     }
 }
 
+impl ListingData {
+    pub fn before_url(&self) -> Option<&str> {
+        self.after.as_deref()
+    }
+
+    pub fn after_url(&self) -> Option<&str> {
+        self.before.as_deref()
+    }
+}
+
 pub async fn user(
     client: &Client,
     username: &str,
