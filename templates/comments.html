@@ -27,7 +27,24 @@
         {% when crate::api::PostType::Gallery %}
         <p>Can't display galleries right now</p>
         {% when crate::api::PostType::Poll %}
-        <p>Can't display polls right now</p>
+        {% if let Some(poll_data) = data.post.poll_data %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Options</th>
+                    <th>Votes (total: {{poll_data.total_vote_count}})</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for opt in poll_data.options %}
+                <tr>
+                    <td>{{opt.text}}</td>
+                    <td>idk</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
         {% when crate::api::PostType::Video %}
         <p>Videos cannot be displayed.</p>
     {% endmatch %}

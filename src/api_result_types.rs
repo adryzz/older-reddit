@@ -171,7 +171,7 @@ pub struct T3Data {
     pub url: Option<String>,
     // gallery_data
     // media_metadata
-    // poll_data
+    pub poll_data: Option<PollData>
 }
 
 #[derive(Debug, Clone)]
@@ -194,4 +194,17 @@ impl<'de> Deserialize<'de> for ReplyList {
             serde_json::from_value(value.data).map_err(|e| serde::de::Error::custom(e))?,
         ))
     }
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct PollData {
+    pub options: Vec<PollOption>,
+    pub total_vote_count: u32,
+    //voting_end_timestamp: u64
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct PollOption {
+    pub text: String,
+    pub id: String
 }

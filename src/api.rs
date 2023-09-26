@@ -18,11 +18,11 @@ pub struct CommentsQuery {
 
 impl CommentsQuery {
     pub fn before_url(&self) -> Option<&str> {
-        self.after.as_deref()
+        self.before.as_deref()
     }
 
     pub fn after_url(&self) -> Option<&str> {
-        self.before.as_deref()
+        self.after.as_deref()
     }
 }
 
@@ -30,6 +30,10 @@ impl CommentsQuery {
     pub fn get_post_type(&self) -> PostType {
         if self.post.is_video {
             return PostType::Video;
+        }
+
+        if self.post.poll_data.is_some() {
+            return PostType::Poll;
         }
 
         if self.post.is_gallery.is_some() {
@@ -192,11 +196,11 @@ pub struct SubredditQuery {
 
 impl SubredditQuery {
     pub fn before_url(&self) -> Option<&str> {
-        self.after.as_deref()
+        self.before.as_deref()
     }
 
     pub fn after_url(&self) -> Option<&str> {
-        self.before.as_deref()
+        self.after.as_deref()
     }
 }
 
@@ -269,6 +273,8 @@ pub async fn subreddit(
         }
     };
 
+    let mut after_base = base.clone();
+
     if let Some(s) = after {
         base.add_param("after", s);
     }
@@ -323,10 +329,27 @@ pub async fn subreddit(
         })
         .collect();
 
+        let before = match listing.before {
+            Some(b) => {
+                let mut before_base = after_base.clone();
+                before_base.add_param("before", &b);
+                Some(before_base.build())
+            }
+            _ => None,
+        };
+    
+        let after = match listing.after {
+            Some(b) => {
+                after_base.add_param("after", &b);
+                Some(after_base.build())
+            }
+            _ => None,
+        };
+
     Ok(SubredditQuery {
         posts,
-        after: listing.after,
-        before: listing.before,
+        after: after,
+        before: before,
     })
 }
 
@@ -375,6 +398,8 @@ pub async fn search(
         base.add_param("include_over_18", "on");
     }
 
+    let mut after_base = base.clone();
+
     if let Some(s) = after {
         base.add_param("after", s);
     }
@@ -429,10 +454,28 @@ pub async fn search(
         })
         .collect();
 
+
+    let before = match listing.before {
+        Some(b) => {
+            let mut before_base = after_base.clone();
+            before_base.add_param("before", &b);
+            Some(before_base.build())
+        }
+        _ => None,
+    };
+
+    let after = match listing.after {
+        Some(b) => {
+            after_base.add_param("after", &b);
+            Some(after_base.build())
+        }
+        _ => None,
+    };
+
     Ok(SubredditQuery {
         posts,
-        after: listing.after,
-        before: listing.before,
+        after: after,
+        before: before,
     })
 }
 
@@ -499,11 +542,11 @@ pub async fn wiki(
 
 impl ListingData {
     pub fn before_url(&self) -> Option<&str> {
-        self.after.as_deref()
+        self.before.as_deref()
     }
 
     pub fn after_url(&self) -> Option<&str> {
-        self.before.as_deref()
+        self.after.as_deref()
     }
 }
 
